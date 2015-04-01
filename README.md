@@ -8,7 +8,7 @@ The [aio](aio) directory contains a [Dockerfile](aio/Dockerfile) to instantiate 
     apt-get update && apt-get install docker.io
 
     # Build the Docker image.
-    docker build -t clearwater/aio
+    docker build -t clearwater/aio .
 
     # Start a Docker container with this image.
     docker run -p 8022:22 -p 8080:80 -p 8060:5060 -t -i clearwater/aio
