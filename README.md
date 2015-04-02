@@ -5,13 +5,17 @@ This repository contains [Dockerfiles](https://docs.docker.com/reference/builder
 The [aio](aio) directory contains a [Dockerfile](aio/Dockerfile) to instantiate a Clearwater [all-in-one](http://clearwater.readthedocs.org/en/latest/All_in_one_Images/) node under Docker.  To use it, run
 
     # Install Docker (on Ubuntu).
-    apt-get update && apt-get install docker.io
+    wget -qO- https://get.docker.com/ | sh
 
-    # Build the Docker image.
-    docker build -t clearwater/aio .
+    # Install Docker Compose (on Ubuntu).
+    apt-get install python-pip
+    pip install -U docker-compose
 
-    # Start a Docker container with this image.
-    docker run -p 8022:22 -p 8080:80 -p 8060:5060 -t -i clearwater/aio
+    # Build the base Clearwater docker image.
+    docker build -t clearwater/base base
+
+    # Build all the other Clearwater Docker images and start a deployment.
+    docker-compose -f minimal-distributed.yaml up
 
 The container exposes
 

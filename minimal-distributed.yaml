@@ -1,0 +1,36 @@
+bono:
+  build: bono
+  links:
+    - sprout
+  ports:
+    - 22
+    - "3478:3478"
+    - "5060:5060"
+sprout:
+  build: sprout
+  links:
+    - homestead
+    - homer
+    - ralf
+  ports:
+    - 22
+homestead:
+  build: homestead
+  ports:
+    - 22
+homer:
+  build: homer
+  ports:
+    - 22
+ralf:
+  build: ralf
+  ports:
+    - 22
+ellis:
+  build: ellis
+  links:
+    - homestead
+    - homer
+  ports:
+    - 22
+    - "80:80"
