@@ -1,10 +1,10 @@
 # Clearwater Docker
 
-This repository contains [Dockerfiles](https://docs.docker.com/reference/builder/) for use with [Docker](https://www.docker.com/) to deploy [Project Clearwater](http://www.projectclearwater.org).
+This repository contains [Dockerfiles](https://docs.docker.com/reference/builder/) for use with [Docker](https://www.docker.com/) and [Compose](https://docs.docker.com/compose/) to deploy [Project Clearwater](http://www.projectclearwater.org).
 
-The [aio](aio) directory contains a [Dockerfile](aio/Dockerfile) to instantiate a Clearwater [all-in-one](http://clearwater.readthedocs.org/en/latest/All_in_one_Images/) node under Docker.  To use it, run
+There is a [Compose file](minimal-distributed.yaml) to instantiate a minimal (non-fault-tolerant) distributed Clearwater deployment under Docker.  To use it, run
 
-    # Install Docker (on Ubuntu).
+    # Install Docker (on Ubuntu) - we need the latest for compatibility with Compose.
     wget -qO- https://get.docker.com/ | sh
 
     # Install Docker Compose (on Ubuntu).
@@ -17,8 +17,9 @@ The [aio](aio) directory contains a [Dockerfile](aio/Dockerfile) to instantiate 
     # Build all the other Clearwater Docker images and start a deployment.
     docker-compose -f minimal-distributed.yaml up
 
-The container exposes
+The deployment exposes
 
--   SSH on port 22 (exposed on port 8022) for configuration and troubleshooting
 -   the Ellis web UI on port 80 (exposed on port 8080) for self-provisioning
--   SIP on port 5060 (exposed on port 8060) for service.
+-   STUN/TURN on port 3478 for media relay
+-   SIP on port 5060 for service
+-   SIP/WebSocket on port 5062 for service.

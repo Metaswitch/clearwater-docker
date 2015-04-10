@@ -6,6 +6,7 @@ bono:
     - 22
     - "3478:3478"
     - "5060:5060"
+    - "5062:5062"
 sprout:
   build: sprout
   links:
