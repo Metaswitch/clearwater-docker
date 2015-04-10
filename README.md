@@ -19,7 +19,14 @@ There is a [Compose file](minimal-distributed.yaml) to instantiate a minimal (no
 
 The deployment exposes
 
--   the Ellis web UI on port 80 (exposed on port 8080) for self-provisioning
+-   the Ellis web UI on port 80 (exposed on port 8080) for self-provisioning - the signup key is "secret"
 -   STUN/TURN on port 3478 for media relay
 -   SIP on port 5060 for service
 -   SIP/WebSocket on port 5062 for service.
+
+Additionally, each node exposes SSH - use `docker ps` to see what port its exposed on.  The username/password is root/root.
+
+Once you've turned up the deployment, you can test it by
+
+-   [making a call](http://clearwater.readthedocs.org/en/latest/Making_your_first_call) - make sure you configure your SIP clients with a proxy, as if it were an All-in-One node
+-   [running the live tests](http://clearwater.readthedocs.org/en/latest/Running_the_live_tests) - again, set the PROXY and ELLIS elements, as if it were an All-in-One node.
