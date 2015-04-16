@@ -37,7 +37,7 @@ If you can't or don't want to use Compose, you can turn the deployment up manual
     docker run -d --name bono -p 22 -p 3478:3478 -p 3478:3478/udp -p 5060:5060 -p 5060:5060/udp -p 5062:5062 --link sprout:sprout clearwater/bono
     docker run -d --name ellis -p 22 -p 80:80 --link homestead:homestead --link homer:homer clearwater/ellis
 
-# Exposed Services
+## Exposed Services
 
 The deployment exposes
 
@@ -48,7 +48,7 @@ The deployment exposes
 
 Additionally, each node exposes SSH - use `docker ps` to see what port its exposed on.  The username/password is root/root.
 
-# What Next?
+## What Next?
 
 Once you've turned up the deployment, you can test it by
 
