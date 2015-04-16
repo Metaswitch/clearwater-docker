@@ -23,7 +23,7 @@ There is a [Compose file](minimal-distributed.yaml) to instantiate a minimal (no
 
 If you can't or don't want to use Compose, you can turn the deployment up manually under Docker.  To use it, run
 
-    # Install Docker (on Ubuntu) - we need the latest for compatibility with Compose.
+    # Install Docker (on Ubuntu).
     wget -qO- https://get.docker.com/ | sh
 
     # Build the Clearwater docker images.
