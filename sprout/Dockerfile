@@ -7,5 +7,6 @@ RUN sed -e 's/\(echo 0 > \/proc\/sys\/kernel\/yama\/ptrace_scope\)/# \0/g' -i /e
 COPY chronos.supervisord.conf /etc/supervisor/conf.d/chronos.conf
 COPY memcached.supervisord.conf /etc/supervisor/conf.d/memcached.conf
 COPY sprout.supervisord.conf /etc/supervisor/conf.d/sprout.conf
+COPY clearwater-group.supervisord.conf /etc/supervisor/conf.d/clearwater-group.conf
 
 EXPOSE 5052 5054

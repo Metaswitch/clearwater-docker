@@ -8,5 +8,6 @@ RUN /etc/init.d/cassandra start && apt-get update && DEBIAN_FRONTEND=noninteract
 COPY cassandra.supervisord.conf /etc/supervisor/conf.d/cassandra.conf
 COPY homer.supervisord.conf /etc/supervisor/conf.d/homer.conf
 COPY nginx.supervisord.conf /etc/supervisor/conf.d/nginx.conf
+COPY clearwater-group.supervisord.conf /etc/supervisor/conf.d/clearwater-group.conf
 
 EXPOSE 7888
