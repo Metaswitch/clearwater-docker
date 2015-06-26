@@ -13,6 +13,10 @@ There is a [Compose file](minimal-distributed.yaml) to instantiate a minimal (no
     apt-get install python-pip
     pip install -U docker-compose
 
+    # Checkout clearwater-docker.
+    git clone --recursive git@github.com:Metaswitch/clearwater-docker.git
+    cd clearwater-docker
+
     # Build the base Clearwater docker image.
     docker build -t clearwater/base base
 
@@ -25,6 +29,10 @@ If you can't or don't want to use Compose, you can turn the deployment up manual
 
     # Install Docker (on Ubuntu).
     wget -qO- https://get.docker.com/ | sh
+
+    # Checkout clearwater-docker.
+    git clone --recursive git@github.com:Metaswitch/clearwater-docker.git
+    cd clearwater-docker
 
     # Build the Clearwater docker images.
     for i in base bono ellis homer homestead ralf sprout ; do docker build -t clearwater/$i $i ; done
