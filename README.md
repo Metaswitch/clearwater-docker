@@ -65,7 +65,7 @@ Once you've turned up the deployment, you can test it by
 
 ## Cleaning Up
 
-If you wish to destroy your deployment either to deploy an upgraded version or to free up resources on your docker host, the following may be helpful:
+If you wish to destroy your deployment either to redeploy with a different configuration or version or to free up resources on your docker host, the following may be helpful:
 
     # Stop all the running docker processes (if you used compose to deploy)
     docker-compose -f minimal-distributed.yaml stop
@@ -85,4 +85,4 @@ If you wish to destroy your deployment either to deploy an upgraded version or t
     #
     # This command will report an error due to a conflict, this can be safely
     # ignored.
-    docker rmi $(docker images -a | tail -n +2 | tr -s ' ' | cut -f3 -d' ')
+    docker rmi $(docker images -a | tail -n +2 | grep -v "14.04" | tr -s ' ' | cut -f3 -d' ')
