@@ -22,20 +22,20 @@ To prepare your system to deploy Clearwater using compose, run:
     cd clearwater-docker
 
     # Build the base Clearwater docker image.
-    docker build -t clearwater/base base
+    sudo docker build -t clearwater/base base
 
 ### Starting Clearwater
 
 To start the Clearwater services, run:
 
     # Build all the other Clearwater Docker images and start a deployment.
-    docker-compose -f minimal-distributed.yaml up
+    sudo docker-compose -f minimal-distributed.yaml up
 
 ### Stopping Clearwater
 
 To stop the Clearwater services, run:
 
-    docker-compose -f minimal-distributed.yaml stop
+    sudo docker-compose -f minimal-distributed.yaml stop
 
 ## Manual Turn-Up
 
@@ -53,29 +53,40 @@ To prepare your system to deploy Clearwater manually, run:
     cd clearwater-docker
 
     # Build the Clearwater docker images.
-    for i in base bono ellis homer homestead ralf sprout ; do docker build -t clearwater/$i $i ; done
+    for i in base bono ellis homer homestead ralf sprout ; do sudo docker build -t clearwater/$i $i ; done
 
 ### Starting Clearwater
 
 To start the Clearwater services, run:
 
-    docker run -d --name homestead -p 22 clearwater/homestead
-    docker run -d --name homer -p 22 clearwater/homer
-    docker run -d --name ralf -p 22 clearwater/ralf
-    docker run -d --name sprout -p 22 --link homestead:homestead --link homer:homer --link ralf:ralf clearwater/sprout
-    docker run -d --name bono -p 22 -p 3478:3478 -p 3478:3478/udp -p 5060:5060 -p 5060:5060/udp -p 5062:5062 --link sprout:sprout clearwater/bono
-    docker run -d --name ellis -p 22 -p 80:80 --link homestead:homestead --link homer:homer clearwater/ellis
+    sudo docker run -d --name homestead -p 22 clearwater/homestead
+    sudo docker run -d --name homer -p 22 clearwater/homer
+    sudo docker run -d --name ralf -p 22 clearwater/ralf
+    sudo docker run -d --name sprout -p 22 --link homestead:homestead --link homer:homer --link ralf:ralf clearwater/sprout
+    sudo docker run -d --name bono -p 22 -p 3478:3478 -p 3478:3478/udp -p 5060:5060 -p 5060:5060/udp -p 5062:5062 --link sprout:sprout clearwater/bono
+    sudo docker run -d --name ellis -p 22 -p 80:80 --link homestead:homestead --link homer:homer clearwater/ellis
 
 ### Stopping Clearwater
 
 To stop the Clearwater services, run:
 
-    docker stop -d --name ellis
-    docker stop -d --name bono
-    docker stop -d --name sprout
-    docker stop -d --name ralf
-    docker stop -d --name homer
-    docker stop -d --name homestead
+    sudo docker stop ellis
+    sudo docker stop bono
+    sudo docker stop sprout
+    sudo docker stop ralf
+    sudo docker stop homer
+    sudo docker stop homestead
+    
+### Restarting Clearwater
+
+To restart the Clearwater services, run:
+
+    sudo docker start ellis
+    sudo docker start bono
+    sudo docker start sprout
+    sudo docker start ralf
+    sudo docker start homer
+    sudo docker start homestead
 
 ## Exposed Services
 
@@ -86,7 +97,7 @@ The deployment exposes
 -   SIP on port 5060 for service
 -   SIP/WebSocket on port 5062 for service.
 
-Additionally, each node exposes SSH - use `docker ps` to see what port its exposed on.  The username/password is root/root.
+Additionally, each node exposes SSH - use `sudo docker ps` to see what port its exposed on.  The username/password is root/root.
 
 ## What Next?
 
@@ -99,11 +110,14 @@ Once you've turned up the deployment, you can test it by
 
 If you wish to destroy your deployment either to redeploy with a different configuration or version or to free up resources on your docker host, the following may be useful commands:
 
+    # To rebuild an image (rather than pull it from the cache), add `--no-cache` to the build commands
+    sudo docker build --no-cache -t clearwater/base base
+    
     # Remove all docker instances (not just Clearwater ones!)
-    docker rm $(docker ps -aq)
+    sudo docker rm $(sudo docker ps -aq)
 
     # Remove all the docker image files (not just Clearwater ones!)
-    docker rmi $(docker images -aq)
+    sudo docker rmi $(sudo docker images -aq)
 
     # Remove most of the docker image files, but not the Ubuntu 14.04 base
     # image, use this if you intend to redeploy the clearwater deployment
@@ -111,4 +125,4 @@ If you wish to destroy your deployment either to redeploy with a different confi
     #
     # This command will report an error due to a conflict, this can be safely
     # ignored.
-    docker rmi $(docker images -a | tail -n +2 | grep -v "14.04" | tr -s ' ' | cut -f3 -d' ')
+    sudo docker rmi $(sudo docker images -a | tail -n +2 | grep -v "14.04" | tr -s ' ' | cut -f3 -d' ')
