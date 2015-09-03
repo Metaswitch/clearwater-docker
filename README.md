@@ -112,7 +112,7 @@ If you wish to destroy your deployment either to redeploy with a different confi
 
     # To rebuild an image (rather than pull it from the cache), add `--no-cache` or `--force-recreate` to the build commands
     sudo docker build --no-cache -t clearwater/base base
-    ocker-compose -f minimal-distributed.yaml up --force-recreate
+    sudo docker-compose -f minimal-distributed.yaml up --force-recreate
     
     # Remove all docker instances (not just Clearwater ones!)
     sudo docker rm $(sudo docker ps -aq)
