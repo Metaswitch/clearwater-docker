@@ -29,7 +29,7 @@ To prepare your system to deploy Clearwater using compose, run:
 To start the Clearwater services, run:
 
     # Build all the other Clearwater Docker images and start a deployment.
-    sudo docker-compose -f minimal-distributed.yaml up
+    sudo docker-compose -f minimal-distributed.yaml up -d
 
 ### Stopping Clearwater
 
@@ -110,8 +110,9 @@ Once you've turned up the deployment, you can test it by
 
 If you wish to destroy your deployment either to redeploy with a different configuration or version or to free up resources on your docker host, the following may be useful commands:
 
-    # To rebuild an image (rather than pull it from the cache), add `--no-cache` to the build commands
+    # To rebuild an image (rather than pull it from the cache), add `--no-cache` or `--force-recreate` to the build commands
     sudo docker build --no-cache -t clearwater/base base
+    ocker-compose -f minimal-distributed.yaml up --force-recreate
     
     # Remove all docker instances (not just Clearwater ones!)
     sudo docker rm $(sudo docker ps -aq)
