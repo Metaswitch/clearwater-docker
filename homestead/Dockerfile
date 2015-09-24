@@ -4,7 +4,7 @@ MAINTAINER maintainers@projectclearwater.org
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --force-yes clearwater-cassandra
 RUN sed -e 's/-user cassandra/-user root/g' -i /etc/init.d/cassandra
 
-RUN /etc/init.d/cassandra start && apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --force-yes homestead homestead-prov
+RUN /etc/init.d/cassandra start && apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --force-yes homestead homestead-prov clearwater-prov-tools
 RUN sed -e 's/\(echo 0 > \/proc\/sys\/kernel\/yama\/ptrace_scope\)/# \1/g' -i /etc/init.d/homestead
 
 COPY cassandra.supervisord.conf /etc/supervisor/conf.d/cassandra.conf
