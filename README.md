@@ -60,6 +60,7 @@ To prepare your system to deploy Clearwater manually, run:
 To start the Clearwater services, run:
 
     sudo docker network create --driver bridge clearwater_nw
+    sudo docker run -d --net=clearwater_nw --name etcd quay.io/coreos/etcd:v2.2.5 -name etcd0 -advertise-client-urls http://etcd:2379,http://etcd:4001 -listen-client-urls http://0.0.0.0:2379,http://0.0.0.0:4001 -initial-advertise-peer-urls http://etcd:2380 -listen-peer-urls http://0.0.0.0:2380  -initial-cluster etcd0=http://etcd:2380 -initial-cluster-state new
     sudo docker run -d --net=clearwater_nw --name homestead -p 22 clearwater/homestead
     sudo docker run -d --net=clearwater_nw --name homer -p 22 clearwater/homer
     sudo docker run -d --net=clearwater_nw --name ralf -p 22 clearwater/ralf
