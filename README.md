@@ -59,15 +59,12 @@ To prepare your system to deploy Clearwater manually, run:
 
 To start the Clearwater services, run:
 
-    sudo docker network create --driver bridge clearwater_nw
-    sudo docker run -d --net=clearwater_nw --name homestead -p 22 clearwater/homestead
-    sudo docker run -d --net=clearwater_nw --name homer -p 22 clearwater/homer
-    sudo docker run -d --net=clearwater_nw --name ralf -p 22 clearwater/ralf
-    sudo docker run -d --net=clearwater_nw --name sprout -p 22 clearwater/sprout
-    sudo docker run -d --net=clearwater_nw --name bono -p 22 -p 3478:3478 -p 3478:3478/udp -p 5060:5060 -p 5060:5060/udp -p 5062:5062 clearwater/bono
-    sudo docker run -d --net=clearwater_nw --name ellis -p 22 -p 80:80 clearwater/ellis
-
-The Clearwater Docker images use DNS for service discovery - they require, for example, that the name "ellis" should resolve to the Ellis container's IP address. In standard Docker, user-defined networks include [an embedded DNS server](https://docs.docker.com/engine/userguide/networking/dockernetworks/#docker-embedded-dns-server) which guarantees this (and this is why we create the clearwater_nw network) - and this type of DNS server is relatively common (for example, [Kubernetes provides something similar](http://kubernetes.io/docs/user-guide/services/#dns)).
+    sudo docker run -d --name homestead -p 22 clearwater/homestead
+    sudo docker run -d --name homer -p 22 clearwater/homer
+    sudo docker run -d --name ralf -p 22 clearwater/ralf
+    sudo docker run -d --name sprout -p 22 --link homestead:homestead --link homer:homer --link ralf:ralf clearwater/sprout
+    sudo docker run -d --name bono -p 22 -p 3478:3478 -p 3478:3478/udp -p 5060:5060 -p 5060:5060/udp -p 5062:5062 --link sprout:sprout clearwater/bono
+    sudo docker run -d --name ellis -p 22 -p 80:80 --link homestead:homestead --link homer:homer clearwater/ellis
 
 ### Stopping Clearwater
 
