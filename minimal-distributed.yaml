@@ -27,6 +27,11 @@ services:
       - homestead
       - homer
       - ralf
+    networks:
+      default:
+        aliases:
+          - scscf.sprout
+          - icscf.sprout
     ports:
       - 22
   homestead:
