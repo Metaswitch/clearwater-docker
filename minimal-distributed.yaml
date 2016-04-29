@@ -54,4 +54,3 @@ services:
     ports:
       - 22
       - "80:80"
-
