@@ -14,7 +14,7 @@ To prepare your system to deploy Clearwater using compose, run:
     wget -qO- https://get.docker.com/ | sh
 
     # Install Docker Compose (on Ubuntu).
-    sudo apt-get install python-pip
+    sudo apt-get install python-pip -y
     sudo pip install -U docker-compose
 
     # Checkout clearwater-docker.
