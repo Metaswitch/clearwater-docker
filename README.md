@@ -2,7 +2,14 @@
 
 This repository contains [Dockerfiles](https://docs.docker.com/reference/builder/) for use with [Docker](https://www.docker.com/) and [Compose](https://docs.docker.com/compose/) to deploy [Project Clearwater](http://www.projectclearwater.org).
 
-## Preparation
+There are two options for installing Docker:
+
+- using Docker Compose, which sets up appropriate connections between Docker containers. This is the recommended approach.
+- manually, if Docker Compose isn't available. In this case you need to use some Docker options to set up the networking config that Compose would set up automatically.
+
+You should follow the "Common Preparation" section, then either the "Using Compose" or the "Manual Turn-Up" section.
+
+## Common Preparation
 
 When using the `3.13.0-74-generic` kernel, we've seen [an issue](https://github.com/Metaswitch/clearwater-docker/issues/24) which causes Clearwater not to start properly. If you are using this kernel (`uname -r` will tell you), you should install a newer kernel (e.g. with `sudo apt-get install linux-image-3.13.0-87-generic`) and reboot.
 
@@ -26,9 +33,8 @@ To prepare your system to deploy Clearwater using Compose, after running the com
     sudo apt-get install python-pip -y
     sudo pip install -U docker-compose
 
-    cd clearwater-docker
-
     # Build the base Clearwater docker image.
+    cd clearwater-docker
     sudo docker build -t clearwater/base base
 
 ### Starting Clearwater
@@ -52,9 +58,8 @@ If you can't or don't want to use Compose, you can turn the deployment up manual
 
 To prepare your system to deploy Clearwater without using Compose, after running the common preparation steps above, run:
 
-    cd clearwater-docker
-
     # Build the Clearwater docker images.
+    cd clearwater-docker
     for i in base bono ellis homer homestead ralf sprout ; do sudo docker build -t clearwater/$i $i ; done
 
 ### Starting Clearwater
