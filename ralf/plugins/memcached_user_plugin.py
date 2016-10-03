@@ -38,9 +38,9 @@ from os import sys, path
 sys.path.append(path.dirname(path.abspath(__file__)))
 from memcached_utils import write_memcached_cluster_settings
 
-_log = logging.getLogger("sprout_remote_memcached_plugin")
+_log = logging.getLogger("memcached_user_plugin")
 
-class SproutRemoteMemcachedPlugin(SynchroniserPluginBase):
+class MemcachedUserPlugin(SynchroniserPluginBase):
     def __init__(self, params):
         self._key = "/{}/{}/node_type_memcached/clustering/memcached".format(params.etcd_key, params.local_site)
 
@@ -83,5 +83,5 @@ class SproutRemoteMemcachedPlugin(SynchroniserPluginBase):
 
 
 def load_as_plugin(params):  # pragma: no cover
-    _log.info("Loading the sprout remote Memcached plugin")
-    return SproutRemoteMemcachedPlugin(params)
+    _log.info("Loading the Memcached user plugin")
+    return MemcachedUserPlugin(params)
