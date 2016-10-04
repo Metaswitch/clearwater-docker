@@ -26,8 +26,6 @@ services:
     build: bono
     environment:
       - PUBLIC_IP
-    links:
-      - sprout
     ports:
       - 22
       - "3478:3478"
@@ -37,12 +35,6 @@ services:
       - "5062:5062"
   sprout:
     build: sprout
-    links:
-      - homestead
-      - homer
-      - ralf
-      - chronos
-      - memcached
     networks:
       default:
         aliases:
@@ -52,28 +44,18 @@ services:
       - 22
   homestead:
     build: homestead
-    links:
-      - cassandra
     ports:
       - 22
   homer:
     build: homer
-    links:
-      - cassandra
     ports:
       - 22
   ralf:
     build: ralf
-    links:
-      - chronos
-      - memcached
     ports:
       - 22
   ellis:
     build: ellis
-    links:
-      - homestead
-      - homer
     ports:
       - 22
       - "80:80"
