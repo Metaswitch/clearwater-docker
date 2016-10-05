@@ -1,2 +1,1 @@
-sudo docker inspect --format '{{.Name}} {{ .NetworkSettings.Networks.clearwater_nw.IPAddress }}' $(sudo docker ps -q) |column -t
-
+sudo docker inspect --format '{{.Name}} {{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $(sudo docker ps -q) |column -t
