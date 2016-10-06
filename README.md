@@ -99,16 +99,16 @@ Once you've turned up the deployment, you can test it by
 There are a few scripts that offer short cuts to querying aspects of your deployment:
 
     # Show an abbreviated version of docker ps that fits without wrapping on smaller terminals
-    short_ps.sh
+    utils/short_ps.sh
     
     # Show the IP addresses of the containers in your deployment
-    show_ips.sh
+    utils/show_ips.sh
     
     # Query Chronos nodes over SNMP to get the number of active registrations
-    show_registration_count.sh
+    utils/show_registration_count.sh
     
     # Show information about the state of the storage clusters
-    show_cluster_state.sh
+    utils/show_cluster_state.sh
 
 ## Cleaning Up
 
