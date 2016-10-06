@@ -5,6 +5,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --force-
 RUN sed -e 's/\(echo 0 > \/proc\/sys\/kernel\/yama\/ptrace_scope\)/# \1/g' -i /etc/init.d/homestead
 
 COPY homestead.supervisord.conf /etc/supervisor/conf.d/homestead.conf
+COPY homestead-prov.supervisord.conf /etc/supervisor/conf.d/homestead-prov.conf
 COPY nginx.supervisord.conf /etc/supervisor/conf.d/nginx.conf
 COPY clearwater-group.supervisord.conf /etc/supervisor/conf.d/clearwater-group.conf
 
