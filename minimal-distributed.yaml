@@ -1,3 +1,5 @@
+# Don't define "links" between services.   They aren't necessary and they break load balancing if you later
+# scale up the storage nodes.
 version: '2'
 services:
   etcd:
