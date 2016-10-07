@@ -1,3 +1,5 @@
+# Don't define "links" between services.   They aren't necessary and they break load balancing if you later
+# scale up the storage nodes.
 version: '2'
 services:
   etcd:
@@ -10,10 +12,22 @@ services:
       -listen-peer-urls http://0.0.0.0:2380
       -initial-cluster etcd0=http://etcd:2380
       -initial-cluster-state new
+  memcached:
+    build: memcached
+    ports:
+      - 22
+  chronos:
+    build: chronos
+    ports:
+      - 22
+  cassandra:
+    build: cassandra
+    ports:
+      - 22
   bono:
     build: bono
-    links:
-      - sprout
+    environment:
+      - PUBLIC_IP
     ports:
       - 22
       - "3478:3478"
@@ -23,10 +37,6 @@ services:
       - "5062:5062"
   sprout:
     build: sprout
-    links:
-      - homestead
-      - homer
-      - ralf
     networks:
       default:
         aliases:
@@ -48,9 +58,6 @@ services:
       - 22
   ellis:
     build: ellis
-    links:
-      - homestead
-      - homer
     ports:
       - 22
       - "80:80"

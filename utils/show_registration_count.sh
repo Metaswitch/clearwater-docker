@@ -1,0 +1,1 @@
+sudo docker ps --format "{{.Names}}" | grep chronos | xargs -n1 -i sh -c 'echo "\n{}"; count=$(sudo docker exec {} snmpget -Oqv -v2c -c clearwater-internal localhost .1.2.826.0.1.1578918.9.10.5.4.0);echo chronosRegInstantaneousCount=$count'; echo ""

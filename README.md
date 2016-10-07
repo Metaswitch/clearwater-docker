@@ -20,6 +20,8 @@ To prepare your system to deploy Clearwater on Docker, run:
 
     # Checkout clearwater-docker.
     git clone --recursive git@github.com:Metaswitch/clearwater-docker.git
+    
+Edit clearwater-docker/.env so that PUBLIC_IP is set to an IP address that can be used by SIP clients to access the docker host.   E.g. if you are running in AWS, this wants to be the public IP of your AWS VM.
 
 ## Using Compose
 
@@ -44,12 +46,6 @@ To start the Clearwater services, run:
     # Build all the other Clearwater Docker images and start a deployment.
     sudo docker-compose -f minimal-distributed.yaml up -d
 
-### Stopping Clearwater
-
-To stop the Clearwater services, run:
-
-    sudo docker-compose -f minimal-distributed.yaml stop
-
 ## Manual Turn-Up
 
 If you can't or don't want to use Compose, you can turn the deployment up manually under Docker.
@@ -60,7 +56,7 @@ To prepare your system to deploy Clearwater without using Compose, after running
 
     # Build the Clearwater docker images.
     cd clearwater-docker
-    for i in base bono ellis homer homestead ralf sprout ; do sudo docker build -t clearwater/$i $i ; done
+    for i in base memcached cassandra chronos bono ellis homer homestead ralf sprout ; do sudo docker build -t clearwater/$i $i ; done
 
 ### Starting Clearwater
 
@@ -68,37 +64,18 @@ To start the Clearwater services, run:
 
     sudo docker network create --driver bridge clearwater_nw
     sudo docker run -d --net=clearwater_nw --name etcd quay.io/coreos/etcd:v2.2.5 -name etcd0 -advertise-client-urls http://etcd:2379,http://etcd:4001 -listen-client-urls http://0.0.0.0:2379,http://0.0.0.0:4001 -initial-advertise-peer-urls http://etcd:2380 -listen-peer-urls http://0.0.0.0:2380  -initial-cluster etcd0=http://etcd:2380 -initial-cluster-state new
+    sudo docker run -d --net=clearwater_nw --name memcached -p 22 clearwater/memcached
+    sudo docker run -d --net=clearwater_nw --name cassandra -p 22 clearwater/cassandra
+    sudo docker run -d --net=clearwater_nw --name chronos -p 22 clearwater/chronos
     sudo docker run -d --net=clearwater_nw --name homestead -p 22 clearwater/homestead
     sudo docker run -d --net=clearwater_nw --name homer -p 22 clearwater/homer
     sudo docker run -d --net=clearwater_nw --name ralf -p 22 clearwater/ralf
-    sudo docker run -d --net=clearwater_nw --name sprout -p 22 clearwater/sprout
-    sudo docker run -d --net=clearwater_nw --name bono -p 22 -p 3478:3478 -p 3478:3478/udp -p 5060:5060 -p 5060:5060/udp -p 5062:5062 clearwater/bono
+    sudo docker run -d --net=clearwater_nw --network-alias=icscf.sprout --network-alias=scscf.sprout --name sprout -p 22 clearwater/sprout
+    sudo docker run -d --net=clearwater_nw --name bono --env-file .env -p 22 -p 3478:3478 -p 3478:3478/udp -p 5060:5060 -p 5060:5060/udp -p 5062:5062 clearwater/bono
     sudo docker run -d --net=clearwater_nw --name ellis -p 22 -p 80:80 clearwater/ellis
 
 The Clearwater Docker images use DNS for service discovery - they require, for example, that the name "ellis" should resolve to the Ellis container's IP address. In standard Docker, user-defined networks include [an embedded DNS server](https://docs.docker.com/engine/userguide/networking/dockernetworks/#docker-embedded-dns-server) which guarantees this (and this is why we create the clearwater_nw network) - and this type of DNS server is relatively common (for example, [Kubernetes provides something similar](http://kubernetes.io/docs/user-guide/services/#dns)).
-
-### Stopping Clearwater
-
-To stop the Clearwater services, run:
-
-    sudo docker stop ellis
-    sudo docker stop bono
-    sudo docker stop sprout
-    sudo docker stop ralf
-    sudo docker stop homer
-    sudo docker stop homestead
     
-### Restarting Clearwater
-
-To restart the Clearwater services, run:
-
-    sudo docker start ellis
-    sudo docker start bono
-    sudo docker start sprout
-    sudo docker start ralf
-    sudo docker start homer
-    sudo docker start homestead
-
 ## Exposed Services
 
 The deployment exposes
@@ -108,7 +85,7 @@ The deployment exposes
 -   SIP on port 5060 for service
 -   SIP/WebSocket on port 5062 for service.
 
-Additionally, each node exposes SSH - use `sudo docker ps` to see what port its exposed on.  The username/password is root/root.
+Additionally, each node exposes SSH - use `sudo docker ps` to see what port its exposed on.  The username/password is root/root.   Alternatively you can run a bash session in a container by name using e.g. `sudo docker exec -it <container_name> bash`
 
 ## What Next?
 
@@ -116,6 +93,22 @@ Once you've turned up the deployment, you can test it by
 
 -   [making a call](http://clearwater.readthedocs.org/en/latest/Making_your_first_call) - make sure you configure your SIP clients with a proxy, as if it were an All-in-One node
 -   [running the live tests](http://clearwater.readthedocs.org/en/latest/Running_the_live_tests) - again, set the PROXY and ELLIS elements, as if it were an All-in-One node.
+
+## Utilities
+
+There are a few scripts that offer short cuts to querying aspects of your deployment:
+
+    # Show an abbreviated version of docker ps that fits without wrapping on smaller terminals
+    utils/short_ps.sh
+    
+    # Show the IP addresses of the containers in your deployment
+    utils/show_ips.sh
+    
+    # Query Chronos nodes over SNMP to get the number of active registrations
+    utils/show_registration_count.sh
+    
+    # Show information about the state of the storage clusters
+    utils/show_cluster_state.sh
 
 ## Cleaning Up
 
@@ -125,7 +118,7 @@ If you wish to destroy your deployment either to redeploy with a different confi
     sudo docker build --no-cache -t clearwater/base base
     sudo docker-compose -f minimal-distributed.yaml up --force-recreate
     
-    # Remove all docker instances (not just Clearwater ones!)
+    # Remove all docker containers (not just Clearwater ones!)
     sudo docker rm $(sudo docker ps -aq)
 
     # Remove all the docker image files (not just Clearwater ones!)
