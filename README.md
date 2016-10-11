@@ -98,6 +98,14 @@ To start the Clearwater services, run:
 
 The Clearwater Docker images use DNS for service discovery - they require, for example, that the name "ellis" should resolve to the Ellis container's IP address. In standard Docker, user-defined networks include [an embedded DNS server](https://docs.docker.com/engine/userguide/networking/dockernetworks/#docker-embedded-dns-server) which guarantees this (and this is why we create the clearwater_nw network) - and this type of DNS server is relatively common (for example, [Kubernetes provides something similar](http://kubernetes.io/docs/user-guide/services/#dns)).
     
+#### Scaling the deployment    
+    
+It is possible to spin up additional Sprout, Cassandra, Memcached and Chronos nodes simply by repeating the relevant command `docker run` command but providing a different name.   E.g. 
+
+    sudo docker run -d --net=clearwater_nw --name memcached -p 22 clearwater/memcached
+
+Scaling of clearwater-docker deployments is work in progress though, so see the limitations described above (for scaling using Compose).
+
 ## Exposed Services
 
 The deployment exposes
