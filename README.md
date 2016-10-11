@@ -102,7 +102,7 @@ The Clearwater Docker images use DNS for service discovery - they require, for e
     
 It is possible to spin up additional Sprout, Cassandra, Memcached and Chronos nodes simply by repeating the relevant command `docker run` command but providing a different name.   E.g. 
 
-    sudo docker run -d --net=clearwater_nw --name memcached -p 22 clearwater/memcached
+    sudo docker run -d --net=clearwater_nw --name memcached_2 -p 22 clearwater/memcached
 
 Scaling of clearwater-docker deployments is work in progress though, so see the limitations described above (for scaling using Compose).
 
