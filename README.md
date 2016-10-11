@@ -31,7 +31,7 @@ If you want to be able to monitor your Docker deployment via a web UI then you m
 
 There is a [Compose file](minimal-distributed.yaml) to instantiate a minimal (non-fault-tolerant) distributed Clearwater deployment under Docker.
 
-### Preparation
+#### Preparation
 
 To prepare your system to deploy Clearwater using Compose, after running the common preparation steps above, run:
 
@@ -43,14 +43,14 @@ To prepare your system to deploy Clearwater using Compose, after running the com
     cd clearwater-docker
     sudo docker build -t clearwater/base base
 
-### Starting Clearwater
+#### Starting Clearwater
 
 To start the Clearwater services, run:
 
     # Build all the other Clearwater Docker images and start a deployment.
     sudo docker-compose -f minimal-distributed.yaml up -d
 
-### Scaling the deployment
+#### Scaling the deployment
 
 Having started up a deployment, it is then possible to scale it by adding more Sprout, Memcached, Chronos or Cassandra nodes.   E.g. to spin up an additional node of each of these types, run:
 
@@ -72,7 +72,7 @@ If you scale up the clusters of storage nodes, you can monitor progress as new n
 
 If you can't or don't want to use Compose, you can turn the deployment up manually under Docker.
 
-### Preparation
+#### Preparation
 
 To prepare your system to deploy Clearwater without using Compose, after running the common preparation steps above, run:
 
@@ -80,7 +80,7 @@ To prepare your system to deploy Clearwater without using Compose, after running
     cd clearwater-docker
     for i in base memcached cassandra chronos bono ellis homer homestead ralf sprout ; do sudo docker build -t clearwater/$i $i ; done
 
-### Starting Clearwater
+#### Starting Clearwater
 
 To start the Clearwater services, run:
 
