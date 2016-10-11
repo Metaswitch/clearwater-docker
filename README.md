@@ -23,6 +23,10 @@ To prepare your system to deploy Clearwater on Docker, run:
     
 Edit clearwater-docker/.env so that PUBLIC_IP is set to an IP address that can be used by SIP clients to access the docker host.   E.g. if you are running in AWS, this wants to be the public IP of your AWS VM.
 
+If you want to be able to monitor your Docker deployment via a web UI then you might like to install and run [Weave Scope](https://www.weave.works/products/weave-scope/).  This only takes a minute to [install](https://www.weave.works/install-weave-scope/) and provides real time visualizations showing all of your containers, their resource usage and the connectivity between them.   
+
+![alt text](images/clearwater-docker in scope.jpg "Clearwater-Docker dispayed in Scope")
+
 ## Using Compose
 
 There is a [Compose file](minimal-distributed.yaml) to instantiate a minimal (non-fault-tolerant) distributed Clearwater deployment under Docker.
@@ -45,6 +49,24 @@ To start the Clearwater services, run:
 
     # Build all the other Clearwater Docker images and start a deployment.
     sudo docker-compose -f minimal-distributed.yaml up -d
+
+### Scaling the deployment
+
+Having started up a deployment, it is then possible to scale it by adding more Sprout, Memcached, Chronos or Cassandra nodes.   E.g. to spin up an additional node of each of these types, run:
+
+    sudo docker-compose -f minimal-distributed.yaml scale sprout=2 memcached=2 chronos=2 cassandra=2
+
+Note that scaling of Docker deployments is a work in progress and there are currently a number of known issues...
+
+* Bono doesn’t automatically start using new Sprout nodes unless the Bono process is restarted, e.g.
+
+    `sudo docker exec clearwaterdocker_bono_1 sudo service bono restart`
+    
+* Homestead-prov and Ellis don’t load balance across multiple Cassandra nodes.
+
+* There is no tested or documented process for scaling down clusters of storage nodes in Docker -- it isn't sufficient to just delete the containers as they need to be explicitly decommissioned and removed from the clusters.
+
+If you scale up the clusters of storage nodes, you can monitor progress as new nodes join the clusters by running `utils/show_cluster_state.sh`.
 
 ## Manual Turn-Up
 
