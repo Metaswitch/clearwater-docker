@@ -25,7 +25,7 @@ Edit clearwater-docker/.env so that PUBLIC_IP is set to an IP address that can b
 
 If you want to be able to monitor your Docker deployment via a web UI then you might like to install and run [Weave Scope](https://www.weave.works/products/weave-scope/).  This only takes a minute to [install](https://www.weave.works/install-weave-scope/) and provides real time visualizations showing all of your containers, their resource usage and the connectivity between them.   
 
-![alt text](images/clearwater-docker in scope.jpg "Clearwater-Docker dispayed in Scope")
+![alt text](docs/images/clearwater-docker in scope.jpg "Clearwater-Docker dispayed in Scope")
 
 ## Using Compose
 
