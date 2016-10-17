@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    service: chronos
+  name: chronos
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    service: chronos
+  template:
+    metadata:
+      labels:
+        service: chronos
+    spec:
+      containers:
+      - image: "clearwater/chronos:latest"
+        imagePullPolicy: ""
+        name: chronos
+        ports:
+        - containerPort: 22
+        - containerPort: 7253
+        resources: {}
+      restartPolicy: Always

@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    service: homer
+  name: homer
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    service: homer
+  template:
+    metadata:
+      labels:
+        service: homer
+    spec:
+      containers:
+      - image: "clearwater/homer:latest"
+        imagePullPolicy: ""
+        name: homer
+        ports:
+        - containerPort: 22
+        - containerPort: 7888
+        resources: {}
+      restartPolicy: Always

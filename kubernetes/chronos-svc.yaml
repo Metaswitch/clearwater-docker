@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: chronos
+  namespace: default
+spec:
+  ports:
+  - name: "7253"
+    nodePort: 0
+    port: 7253
+    protocol: ""
+    targetPort: 0
+  selector:
+    service: chronos

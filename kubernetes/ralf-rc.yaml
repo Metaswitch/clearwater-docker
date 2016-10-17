@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    service: ralf
+  name: ralf
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    service: ralf
+  template:
+    metadata:
+      labels:
+        service: ralf
+    spec:
+      containers:
+      - image: "clearwater/ralf:latest"
+        imagePullPolicy: ""
+        name: ralf
+        ports:
+        - containerPort: 22
+        - containerPort: 10888
+        resources: {}
+      restartPolicy: Always
+      serviceAccountName: ""
+      volumes: null

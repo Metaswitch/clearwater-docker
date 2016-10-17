@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    service: homestead
+  name: homestead
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    service: homestead
+  template:
+    metadata:
+      labels:
+        service: homestead
+    spec:
+      containers:
+      - image: "clearwater/homestead:latest"
+        imagePullPolicy: ""
+        name: homestead
+        ports:
+        - containerPort: 22
+        - containerPort: 8888
+        - containerPort: 8889
+        resources: {}
+      restartPolicy: Always

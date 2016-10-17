@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: memcached
+  namespace: default
+spec:
+  ports:
+  - name: "11211"
+    nodePort: 0
+    port: 11211
+    protocol: ""
+    targetPort: 0
+  selector:
+    service: memcached

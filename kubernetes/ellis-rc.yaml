@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    service: ellis
+  name: ellis
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    service: ellis
+  template:
+    metadata:
+      labels:
+        service: ellis
+    spec:
+      containers:
+      - image: "clearwater/ellis:latest"
+        imagePullPolicy: ""
+        name: ellis
+        ports:
+        - containerPort: 22
+        - containerPort: 80
+        resources: {}
+      restartPolicy: Always
+      serviceAccountName: ""
+      volumes: null

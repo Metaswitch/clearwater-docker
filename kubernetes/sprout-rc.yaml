@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    service: sprout
+  name: sprout
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    service: sprout
+  template:
+    metadata:
+      labels:
+        service: sprout
+    spec:
+      containers:
+      - image: "clearwater/sprout:latest"
+        imagePullPolicy: ""
+        name: sprout
+        ports:
+        - containerPort: 22
+        resources: {}
+      restartPolicy: Always

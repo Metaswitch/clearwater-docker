@@ -2,10 +2,14 @@
 
 This repository contains [Dockerfiles](https://docs.docker.com/reference/builder/) for use with [Docker](https://www.docker.com/) and [Compose](https://docs.docker.com/compose/) to deploy [Project Clearwater](http://www.projectclearwater.org).
 
-There are two options for installing Docker:
+There are three options for installing Docker:
 
-- using Docker Compose, which sets up appropriate connections between Docker containers. This is the recommended approach.
-- manually, if Docker Compose isn't available. In this case you need to use some Docker options to set up the networking config that Compose would set up automatically.
+- Using Docker Compose. This is the recommended approach.
+
+- Using Kuberenetes.
+
+- Manually. In this case you need to use some Docker options to set up the
+  networking config that Compose or Kubernetes would set up automatically.
 
 You should follow the "Common Preparation" section, then either the "Using Compose" or the "Manual Turn-Up" section.
 
@@ -23,7 +27,7 @@ To prepare your system to deploy Clearwater on Docker, run:
     
 Edit clearwater-docker/.env so that PUBLIC_IP is set to an IP address that can be used by SIP clients to access the docker host.   E.g. if you are running in AWS, this wants to be the public IP of your AWS VM.
 
-If you want to be able to monitor your Docker deployment via a web UI then you might like to install and run [Weave Scope](https://www.weave.works/products/weave-scope/).  This only takes a minute to [install](https://www.weave.works/install-weave-scope/) and provides real time visualizations showing all of your containers, their resource usage and the connectivity between them.   
+If you want to be able to monitor your Docker deployment via a web UI then you might like to install and run [Weave Scope](https://www.weave.works/products/weave-scope/).  This only takes a minute to [install](https://www.weave.works/install-weave-scope/) and provides real time visualizations showing all of your containers, their resource usage and the connectivity between them.
 
 ![alt text](docs/images/clearwater-docker in scope.jpg "Clearwater-Docker dispayed in Scope")
 
@@ -68,6 +72,36 @@ Note that scaling of Docker deployments is a work in progress and there are curr
 
 If you scale up the clusters of storage nodes, you can monitor progress as new nodes join the clusters by running `utils/show_cluster_state.sh`.
 
+## Using Kubernetes
+
+Instead of using Docker Compose, you can deploy Clearwater in Kubernetes. This
+requires a Kubernetes cluster, and a Docker repository.
+
+### Prepare the images
+
+- First, build all the required images locally.
+
+        # Build the Clearwater docker images.
+        cd clearwater-docker
+        for i in base memcached cassandra chronos bono ellis homer homestead ralf sprout ; do docker build -t clearwater/$i $i ; done
+
+- Next, push them to your repository (which must be accessible from the Kubernetes deployment)
+
+        for i in base memcached cassandra chronos bono ellis homer homestead ralf sprout
+        do
+            docker tag -f clearwater/$i:latest path_to_your_repo/clearwater/$i:latest
+            docker push path_to_your_repo/clearwater/$i:latest
+        done
+
+- Finally, change the image paths in the Kubernetes files. For every file
+  ending `-rc.yaml`, edit the image path to be the correct path for your
+  repository.
+
+
+### Deploy Clearwater in Kubernetes
+
+To deploy the images, you should simply do `kubectl create -f clearwater-docker/kubernetes`.
+
 ## Manual Turn-Up
 
 If you can't or don't want to use Compose, you can turn the deployment up manually under Docker.
@@ -98,7 +132,7 @@ To start the Clearwater services, run:
 
 The Clearwater Docker images use DNS for service discovery - they require, for example, that the name "ellis" should resolve to the Ellis container's IP address. In standard Docker, user-defined networks include [an embedded DNS server](https://docs.docker.com/engine/userguide/networking/dockernetworks/#docker-embedded-dns-server) which guarantees this (and this is why we create the clearwater_nw network) - and this type of DNS server is relatively common (for example, [Kubernetes provides something similar](http://kubernetes.io/docs/user-guide/services/#dns)).
     
-#### Scaling the deployment    
+#### Scaling the deployment
     
 It is possible to spin up additional Sprout, Cassandra, Memcached and Chronos nodes simply by repeating the relevant command `docker run` command but providing a different name.   E.g. 
 

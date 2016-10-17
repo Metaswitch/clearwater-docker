@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    service: cassandra
+  name: cassandra
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    service: cassandra
+  template:
+    metadata:
+      labels:
+        service: cassandra
+    spec:
+      containers:
+      - image: "clearwater/cassandra:latest"
+        imagePullPolicy: ""
+        name: cassandra
+        ports:
+        - containerPort: 22
+        - containerPort: 7001
+        - containerPort: 9042
+        - containerPort: 9160
+        resources: {}
+      restartPolicy: Always

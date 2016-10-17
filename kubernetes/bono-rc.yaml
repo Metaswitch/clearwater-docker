@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    service: bono
+  name: bono
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    service: bono
+  template:
+    metadata:
+      labels:
+        service: bono
+    spec:
+      containers:
+      - image: "clearwater/bono:latest"
+        imagePullPolicy: ""
+        name: bono
+        ports:
+        - containerPort: 22
+        - containerPort: 3478
+        - containerPort: 5060
+        - containerPort: 5062
+        - containerPort: 5060
+          protocol: "UDP"
+        - containerPort: 5062
+          protocol: "UDP"
+        resources: {}
+      restartPolicy: Always

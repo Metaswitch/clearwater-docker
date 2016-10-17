@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ralf
+  namespace: default
+spec:
+  ports:
+  - name: "10888"
+    nodePort: 0
+    port: 10888
+    protocol: ""
+    targetPort: 0
+  selector:
+    service: ralf

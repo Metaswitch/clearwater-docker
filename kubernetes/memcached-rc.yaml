@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    service: memcached
+  name: memcached
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    service: memcached
+  template:
+    metadata:
+      labels:
+        service: memcached
+    spec:
+      containers:
+      - image: "clearwater/memcached:latest"
+        imagePullPolicy: ""
+        name: memcached
+        ports:
+        - containerPort: 22
+        - containerPort: 11211
+        resources: {}
+      restartPolicy: Always
