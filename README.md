@@ -24,7 +24,7 @@ To prepare your system to deploy Clearwater on Docker, run:
 
     # Checkout clearwater-docker.
     git clone --recursive git@github.com:Metaswitch/clearwater-docker.git
-    
+
 Edit clearwater-docker/.env so that PUBLIC_IP is set to an IP address that can be used by SIP clients to access the docker host.   E.g. if you are running in AWS, this wants to be the public IP of your AWS VM.
 
 If you want to be able to monitor your Docker deployment via a web UI then you might like to install and run [Weave Scope](https://www.weave.works/products/weave-scope/).  This only takes a minute to [install](https://www.weave.works/install-weave-scope/) and provides real time visualizations showing all of your containers, their resource usage and the connectivity between them.
@@ -65,7 +65,7 @@ Note that scaling of Docker deployments is a work in progress and there are curr
 * Bono doesn’t automatically start using new Sprout nodes unless the Bono process is restarted, e.g.
 
     `sudo docker exec clearwaterdocker_bono_1 sudo service bono restart`
-    
+
 * Homestead-prov and Ellis don’t load balance across multiple Cassandra nodes.
 
 * There is no tested or documented process for scaling down clusters of storage nodes in Docker -- it isn't sufficient to just delete the containers as they need to be explicitly decommissioned and removed from the clusters.
@@ -131,10 +131,10 @@ To start the Clearwater services, run:
     sudo docker run -d --net=clearwater_nw --name ellis -p 22 -p 80:80 clearwater/ellis
 
 The Clearwater Docker images use DNS for service discovery - they require, for example, that the name "ellis" should resolve to the Ellis container's IP address. In standard Docker, user-defined networks include [an embedded DNS server](https://docs.docker.com/engine/userguide/networking/dockernetworks/#docker-embedded-dns-server) which guarantees this (and this is why we create the clearwater_nw network) - and this type of DNS server is relatively common (for example, [Kubernetes provides something similar](http://kubernetes.io/docs/user-guide/services/#dns)).
-    
+
 #### Scaling the deployment
-    
-It is possible to spin up additional Sprout, Cassandra, Memcached and Chronos nodes simply by repeating the relevant command `docker run` command but providing a different name.   E.g. 
+
+It is possible to spin up additional Sprout, Cassandra, Memcached and Chronos nodes simply by repeating the relevant command `docker run` command but providing a different name.   E.g.
 
     sudo docker run -d --net=clearwater_nw --name memcached_2 -p 22 clearwater/memcached
 
@@ -155,8 +155,8 @@ Additionally, each node exposes SSH - use `sudo docker ps` to see what port its 
 
 Once you've turned up the deployment, you can test it by
 
--   [making a call](http://clearwater.readthedocs.org/en/latest/Making_your_first_call) - make sure you configure your SIP clients with a proxy, as if it were an All-in-One node
--   [running the live tests](http://clearwater.readthedocs.org/en/latest/Running_the_live_tests) - again, set the PROXY and ELLIS elements, as if it were an All-in-One node.
+-   [making a call](http://clearwater.readthedocs.org/en/latest/Making_your_first_call.html) - make sure you configure your SIP clients with a proxy, as if it were an All-in-One node
+-   [running the live tests](http://clearwater.readthedocs.org/en/latest/Running_the_live_tests.html) - again, set the PROXY and ELLIS elements, as if it were an All-in-One node.
 
 ## Utilities
 
@@ -164,13 +164,13 @@ There are a few scripts that offer short cuts to querying aspects of your deploy
 
     # Show an abbreviated version of docker ps that fits without wrapping on smaller terminals
     utils/short_ps.sh
-    
+
     # Show the IP addresses of the containers in your deployment
     utils/show_ips.sh
-    
+
     # Query Chronos nodes over SNMP to get the number of active registrations
     utils/show_registration_count.sh
-    
+
     # Show information about the state of the storage clusters
     utils/show_cluster_state.sh
 
@@ -181,7 +181,7 @@ If you wish to destroy your deployment either to redeploy with a different confi
     # To rebuild an image (rather than pull it from the cache), add `--no-cache` or `--force-recreate` to the build commands
     sudo docker build --no-cache -t clearwater/base base
     sudo docker-compose -f minimal-distributed.yaml up --force-recreate
-    
+
     # Remove all docker containers (not just Clearwater ones!)
     sudo docker rm $(sudo docker ps -aq)
 
