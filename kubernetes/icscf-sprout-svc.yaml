@@ -5,7 +5,7 @@ metadata:
   namespace: default
 spec:
   ports:
-  - name: "5052"
+  - name: "sip"
     nodePort: 0
     port: 5052
     protocol: ""
@@ -17,3 +17,4 @@ spec:
     targetPort: 0
   selector:
     service: sprout
+  clusterIP: None

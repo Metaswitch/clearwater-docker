@@ -22,5 +22,7 @@ spec:
         - containerPort: 22
         - containerPort: 8888
         - containerPort: 8889
-        resources: {}
+        env:
+        - name: ZONE
+          value: ZONE_VALUE
       restartPolicy: Always

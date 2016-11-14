@@ -27,5 +27,7 @@ spec:
           protocol: "UDP"
         - containerPort: 5062
           protocol: "UDP"
-        resources: {}
+        env:
+        - name: ZONE
+          value: ZONE_VALUE
       restartPolicy: Always

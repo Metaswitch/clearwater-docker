@@ -12,3 +12,4 @@ spec:
     targetPort: 0
   selector:
     service: chronos
+  clusterIP: None

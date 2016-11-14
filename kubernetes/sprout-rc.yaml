@@ -20,5 +20,7 @@ spec:
         name: sprout
         ports:
         - containerPort: 22
-        resources: {}
+        env:
+        - name: ZONE
+          value: ZONE_VALUE
       restartPolicy: Always

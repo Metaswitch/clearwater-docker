@@ -10,10 +10,11 @@ spec:
     port: 5052
     protocol: ""
     targetPort: 0
-  - name: "5054"
+  - name: "sip"
     nodePort: 0
     port: 5054
     protocol: ""
     targetPort: 0
   selector:
     service: sprout
+  clusterIP: None

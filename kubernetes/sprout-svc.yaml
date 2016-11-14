@@ -17,3 +17,4 @@ spec:
     targetPort: 0
   selector:
     service: sprout
+  clusterIP: None

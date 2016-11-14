@@ -23,5 +23,7 @@ spec:
         - containerPort: 7001
         - containerPort: 9042
         - containerPort: 9160
-        resources: {}
+        env:
+        - name: ZONE
+          value: ZONE_VALUE
       restartPolicy: Always
