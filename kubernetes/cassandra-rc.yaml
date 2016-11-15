@@ -16,14 +16,10 @@ spec:
     spec:
       containers:
       - image: "clearwater/cassandra:latest"
-        imagePullPolicy: ""
         name: cassandra
         ports:
         - containerPort: 22
         - containerPort: 7001
         - containerPort: 9042
         - containerPort: 9160
-        env:
-        - name: ZONE
-          value: ZONE_VALUE
       restartPolicy: Always

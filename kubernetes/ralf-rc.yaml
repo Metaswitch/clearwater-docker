@@ -16,7 +16,6 @@ spec:
     spec:
       containers:
       - image: "clearwater/ralf:latest"
-        imagePullPolicy: ""
         name: ralf
         ports:
         - containerPort: 22

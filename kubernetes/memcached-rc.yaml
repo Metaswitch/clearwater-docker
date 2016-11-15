@@ -16,7 +16,6 @@ spec:
     spec:
       containers:
       - image: "clearwater/memcached:latest"
-        imagePullPolicy: ""
         name: memcached
         ports:
         - containerPort: 22

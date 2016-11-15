@@ -16,12 +16,8 @@ spec:
     spec:
       containers:
       - image: "clearwater/chronos:latest"
-        imagePullPolicy: ""
         name: chronos
         ports:
         - containerPort: 22
         - containerPort: 7253
-        env:
-        - name: ZONE
-          value: ZONE_VALUE
       restartPolicy: Always

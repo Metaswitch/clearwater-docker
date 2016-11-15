@@ -16,12 +16,10 @@ spec:
     spec:
       containers:
       - image: "clearwater/ellis:latest"
-        imagePullPolicy: ""
         name: ellis
         ports:
         - containerPort: 22
         - containerPort: 80
-        resources: {}
         env:
         - name: ZONE
           value: ZONE_VALUE

@@ -1,20 +1,20 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: icscf-sprout
+  name: bono-udp
   namespace: default
 spec:
   ports:
-  - name: "sip"
+  - name: "5060"
     nodePort: 0
-    port: 5052
-    protocol: ""
+    port: 5060
+    protocol: "UDP"
     targetPort: 0
-  - name: "5054"
+  - name: "5062"
     nodePort: 0
-    port: 5054
-    protocol: ""
+    port: 5062
+    protocol: "UDP"
     targetPort: 0
   selector:
-    service: sprout
+    service: bono
   clusterIP: None
