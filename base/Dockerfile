@@ -23,3 +23,18 @@ RUN /etc/init.d/clearwater-auto-config-docker restart
 RUN /etc/init.d/clearwater-infrastructure restart
 COPY clearwater-infrastructure.supervisord.conf /etc/supervisor/conf.d/clearwater-infrastructure.conf
 COPY clearwater-group.supervisord.conf /etc/supervisor/conf.d/clearwater-group.conf
+
+# Changes to make everything work with Kubernetes
+RUN apt-get install -y netcat-openbsd
+RUN sed -i 's/SCTP_streams.*/No_SCTP;/' /usr/share/clearwater/bin/generic_create_diameterconf
+RUN sed -i 's/scscf.sprout/sprout/' /etc/init.d/clearwater-auto-config-docker
+
+# Set up the URIs.
+RUN sed -i 's/^\( \+sprout_hostname=.*\)/\1\n    icscf_uri="sip:\$sprout_hostname:5052;transport=tcp"/' /etc/init.d/clearwater-auto-config-docker
+RUN sed -i 's/^\( \+sprout_hostname=.*\)/\1\n    scscf_uri="sip:\$sprout_hostname:5054;transport=tcp"/' /etc/init.d/clearwater-auto-config-docker
+RUN sed -i 's/^\( \+s\/^sprout_hostname=.*\)/\1\n    s\/^icscf_uri=.*\/icscf_uri="'\''$icscf_uri'\''"\//' /etc/init.d/clearwater-auto-config-docker
+RUN sed -i 's/^\( \+s\/^sprout_hostname=.*\)/\1\n    s\/^scscf_uri=.*\/scscf_uri="'\''$scscf_uri'\''"\//' /etc/init.d/clearwater-auto-config-docker
+RUN echo "scscf_uri=\"sip:sprout:5054;transport=tcp\"" >> /etc/clearwater/shared_config
+RUN echo "icscf_uri=\"sip:sprout:5052;transport=tcp\"" >> /etc/clearwater/shared_config
+
+COPY liveness.sh /usr/share/kubernetes/

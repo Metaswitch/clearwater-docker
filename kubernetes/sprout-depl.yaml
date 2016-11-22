@@ -1,0 +1,34 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    service: sprout
+  name: sprout
+  namespace: default
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        service: sprout
+    spec:
+      containers:
+      - image: "clearwater/sprout:latest"
+        name: sprout
+        ports:
+        - containerPort: 22
+        env:
+        - name: ZONE
+          value: ZONE_VALUE
+        - name: MY_POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        livenessProbe:
+          exec:
+            command: ["/bin/bash", "/usr/share/kubernetes/liveness.sh", "5052 5054"]
+          initialDelaySeconds: 30
+        readinessProbe:
+          exec:
+            command: ["/bin/bash", "/usr/share/kubernetes/liveness.sh", "5052 5054"]
+      restartPolicy: Always

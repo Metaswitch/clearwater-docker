@@ -17,4 +17,3 @@ spec:
     targetPort: 0
   selector:
     service: bono
-  clusterIP: None

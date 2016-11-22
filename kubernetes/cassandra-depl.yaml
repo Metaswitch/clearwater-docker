@@ -1,0 +1,39 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    service: cassandra
+  name: cassandra
+  namespace: default
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        service: cassandra
+    spec:
+      containers:
+      - image: "clearwater/cassandra:latest"
+        name: cassandra
+        ports:
+        - containerPort: 22
+        - containerPort: 7001
+        - containerPort: 9042
+        - containerPort: 9160
+        #livenessProbe:
+        #  tcpSocket:
+        #    port: 7001
+        #  initialDelaySeconds: 30
+        env:
+        - name: MY_POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        livenessProbe:
+          exec:
+            command: ["/bin/bash", "/usr/share/kubernetes/liveness.sh", "7000 9042 9160"]
+          initialDelaySeconds: 30
+        readinessProbe:
+          exec:
+            command: ["/bin/bash", "/usr/share/kubernetes/liveness.sh", "7000 9042 9160"]
+      restartPolicy: Always

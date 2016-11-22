@@ -6,19 +6,13 @@ metadata:
 spec:
   ports:
   - name: "7001"
-    nodePort: 0
     port: 7001
-    protocol: ""
-    targetPort: 0
+  - name: "7000"
+    port: 7000
   - name: "9042"
-    nodePort: 0
     port: 9042
-    protocol: ""
-    targetPort: 0
   - name: "9160"
-    nodePort: 0
     port: 9160
-    protocol: ""
-    targetPort: 0
   selector:
     service: cassandra
+  clusterIP: None
