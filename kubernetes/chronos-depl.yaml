@@ -4,7 +4,6 @@ metadata:
   labels:
     service: chronos
   name: chronos
-  namespace: default
 spec:
   replicas: 1
   template:

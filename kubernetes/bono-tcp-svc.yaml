@@ -2,23 +2,19 @@ apiVersion: v1
 kind: Service
 metadata:
   name: bono-tcp
-  namespace: default
 spec:
+  type: NodePort
+  #type: LoadBalancer
+  #loadBalancerIP: 104.199.68.94
   ports:
   - name: "3478"
-    nodePort: 0
     port: 3478
-    protocol: ""
     targetPort: 0
   - name: "5060"
-    nodePort: 0
     port: 5060
-    protocol: ""
     targetPort: 0
   - name: "5062"
-    nodePort: 0
     port: 5062
-    protocol: ""
     targetPort: 0
   selector:
     service: bono

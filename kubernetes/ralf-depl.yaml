@@ -4,7 +4,6 @@ metadata:
   labels:
     service: ralf
   name: ralf
-  namespace: default
 spec:
   replicas: 1
   template:

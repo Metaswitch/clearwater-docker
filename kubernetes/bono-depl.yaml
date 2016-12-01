@@ -2,7 +2,6 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: bono
-  namespace: default
 spec:
   replicas: 1
   template:

@@ -4,7 +4,6 @@ metadata:
   labels:
     service: ellis
   name: ellis
-  namespace: default
 spec:
   replicas: 1
   template:

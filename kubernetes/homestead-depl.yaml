@@ -4,7 +4,6 @@ metadata:
   labels:
     service: homestead
   name: homestead
-  namespace: default
 spec:
   replicas: 1
   template:

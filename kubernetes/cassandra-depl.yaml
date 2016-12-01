@@ -4,9 +4,8 @@ metadata:
   labels:
     service: cassandra
   name: cassandra
-  namespace: default
 spec:
-  replicas: 1
+  replicas: 3
   template:
     metadata:
       labels:
