@@ -19,7 +19,11 @@ To prepare your system to deploy Clearwater on Docker, run:
     wget -qO- https://get.docker.com/ | sh
 
     # Checkout clearwater-docker.
+    # Either:
     git clone --recursive git@github.com:Metaswitch/clearwater-docker.git
+
+    # Or:
+    git clone --recursive https://github.com/Metaswitch/clearwater-docker.git
 
 Edit clearwater-docker/.env so that PUBLIC_IP is set to an IP address that can be used by SIP clients to access the docker host.   E.g. if you are running in AWS, this wants to be the public IP of your AWS VM.
 
