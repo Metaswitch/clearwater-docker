@@ -16,10 +16,12 @@ ENV LC_ALL en_US.UTF-8
 COPY sysctl /sbin/sysctl
 RUN sed -e 's/\#\(precedence ::ffff:0:0\/96  100\)/\1/g' -i /etc/gai.conf
 
-RUN echo deb http://repo.cw-ngv.com/stable binary/ > /etc/apt/sources.list.d/clearwater.list
+#RUN echo deb http://repo.cw-ngv.com/stable binary/ > /etc/apt/sources.list.d/clearwater.list
+RUN echo deb http://repo.cw-ngv.com/~v11/repo binary/ > /etc/apt/sources.list.d/clearwater.list
 RUN curl -L http://repo.cw-ngv.com/repo_key | apt-key add -
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --force-yes clearwater-infrastructure clearwater-auto-config-docker clearwater-management
-RUN apt-get install -y clearwater-snmpd
+#RUN apt-get install -y clearwater-snmpd
+RUN apt-get install -y --force-yes clearwater-snmpd
 RUN /etc/init.d/clearwater-auto-config-docker restart
 RUN /etc/init.d/clearwater-infrastructure restart
 COPY clearwater-infrastructure.supervisord.conf /etc/supervisor/conf.d/clearwater-infrastructure.conf
@@ -40,5 +42,15 @@ RUN echo "scscf_uri=\"sip:sprout:5054;transport=tcp\"" >> /etc/clearwater/shared
 RUN echo "icscf_uri=\"sip:sprout:5052;transport=tcp\"" >> /etc/clearwater/shared_config
 RUN echo 'snmp_ip=stats-engine.$ZONE'      >> /etc/clearwater/local_config
 RUN echo 'snmp_notification_types=rfc3877' >> /etc/clearwater/local_config
+
+# Code for new version
+RUN echo 'local_site_name=$LOCAL_SITE' >> /etc/clearwater/local_config
+RUN echo 'remote_site_names=$REMOTE_SITE' >> /etc/clearwater/local_config
+RUN echo 'remote_site_name=$REMOTE_SITE' >> /etc/clearwater/local_config
+
+RUN echo 'ralf_session_store=$LOCAL_SITE=memcached,$REMOTE_SITE=memcached.$REMOTE_FULL_DOMAIN' >> /etc/clearwater/shared_config
+RUN echo 'sprout_registration_store=$ralf_session_store' >> /etc/clearwater/shared_config
+RUN echo 'sprout_impi_store=SLOCAL_SITE' >> /etc/clearwater/shared_config
+RUN echo 'remote_cassandra_seeds=$REMOTE_CASSANDRA_VALUE' >> /etc/clearwater/shared_config
 
 COPY liveness.sh /usr/share/kubernetes/
