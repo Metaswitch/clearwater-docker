@@ -6,7 +6,5 @@ RUN sed -e 's/\(echo 0 > \/proc\/sys\/kernel\/yama\/ptrace_scope\)/# \0/g' -i /e
 
 COPY sprout.supervisord.conf /etc/supervisor/conf.d/sprout.conf
 COPY clearwater-group.supervisord.conf /etc/supervisor/conf.d/clearwater-group.conf
-COPY plugins/* /usr/share/clearwater/clearwater-cluster-manager/plugins/
-COPY reload_memcached_users /usr/share/clearwater/bin/reload_memcached_users
 
 EXPOSE 5052 5054
