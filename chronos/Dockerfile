@@ -6,6 +6,5 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --force-
 COPY snmpd.supervisord.conf /etc/supervisor/conf.d/snmpd.conf
 COPY chronos.supervisord.conf /etc/supervisor/conf.d/chronos.conf
 COPY clearwater-group.supervisord.conf /etc/supervisor/conf.d/clearwater-group.conf
-COPY chronos.conf /etc/chronos/chronos.conf
 
 EXPOSE 7253
