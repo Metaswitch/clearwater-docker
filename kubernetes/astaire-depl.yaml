@@ -1,22 +1,21 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  labels:
-    service: memcached
-  name: memcached
+  name: astaire
 spec:
-  replicas: 1
+  replicas: 3
   template:
     metadata:
       labels:
-        service: memcached
+        service: astaire
     spec:
       containers:
-      - image: "clearwater/memcached:latest"
-        name: memcached
+      - image: "gcr.io/angelic-mender-163009/astaire:latest"
+        name: astaire
         ports:
         - containerPort: 22
         - containerPort: 11211
+        - containerPort: 11311
         env:
         - name: MY_POD_IP
           valueFrom:
@@ -24,9 +23,9 @@ spec:
               fieldPath: status.podIP
         livenessProbe:
           tcpSocket:
-            port: 11211
+            port: 11311
           initialDelaySeconds: 30
         readinessProbe:
           tcpSocket:
-            port: 11211
+            port: 11311
       restartPolicy: Always

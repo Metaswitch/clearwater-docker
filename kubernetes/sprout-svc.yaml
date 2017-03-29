@@ -5,15 +5,9 @@ metadata:
 spec:
   ports:
   - name: "5052"
-    nodePort: 0
     port: 5052
-    protocol: ""
-    targetPort: 0
   - name: "5054"
-    nodePort: 0
     port: 5054
-    protocol: ""
-    targetPort: 0
   selector:
     service: sprout
   clusterIP: None

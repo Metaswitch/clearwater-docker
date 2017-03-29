@@ -4,11 +4,9 @@ metadata:
   name: ellis
 spec:
   type: NodePort
-  #type: LoadBalancer
-  #loadBalancerIP: 104.199.68.94
   ports:
   - name: "http"
-    nodePort: 0
     port: 80
+    nodePort: 30080
   selector:
     service: ellis

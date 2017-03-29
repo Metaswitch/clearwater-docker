@@ -1,8 +1,6 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  labels:
-    service: ellis
   name: ellis
 spec:
   replicas: 1
@@ -12,14 +10,14 @@ spec:
         service: ellis
     spec:
       containers:
-      - image: "clearwater/ellis:latest"
+      - image: "gcr.io/angelic-mender-163009/ellis:latest"
         name: ellis
         ports:
         - containerPort: 22
         - containerPort: 80
         env:
         - name: ZONE
-          value: ZONE_VALUE
+          value: default.svc.cluster.local
         - name: MY_POD_IP
           valueFrom:
             fieldRef:

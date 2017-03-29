@@ -1,9 +1,6 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  creationTimestamp: null
-  labels:
-    service: etcdrc
   name: etcd
 spec:
   replicas: 3
@@ -25,8 +22,14 @@ spec:
         - http://$(MY_POD_IP):2380
         - --listen-peer-urls
         - http://0.0.0.0:2380
+        # Discovery using DNS
+        #- --discovery-srv
+        #- default.svc.cluster.local
+        #- --initial-cluster-state
+        #- new
+        # Using central discvovery:
         - --discovery
-        - ETCD_DISCOVERY
+        - http://discovery.etcd.io/401ccd1143f1a06cf105840dbc3a4e36
         # Could also have these instead of --discovery (but only for one pod cluster)
         #- --initial-cluster
         #- $(MY_POD_NAME)=http://$(MY_POD_IP):2380
@@ -50,10 +53,8 @@ spec:
         livenessProbe:
           tcpSocket:
             port: 4001
-          initialDelaySeconds: 30
+          initialDelaySeconds: 300
         readinessProbe:
           tcpSocket:
             port: 4001
-      - image: "REPO/conntester:latest"
-        name: conntester
       restartPolicy: Always

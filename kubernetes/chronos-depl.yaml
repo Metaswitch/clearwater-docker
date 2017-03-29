@@ -12,7 +12,7 @@ spec:
         service: chronos
     spec:
       containers:
-      - image: "clearwater/chronos:latest"
+      - image: "gcr.io/angelic-mender-163009/chronos:latest"
         name: chronos
         ports:
         - containerPort: 22

@@ -4,14 +4,6 @@ MAINTAINER maintainers@projectclearwater.org
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y supervisor curl
 RUN apt-get install -y apt-transport-https unzip
 
-# Certificates
-COPY 99clearwater /etc/apt/apt.conf.d/99clearwater
-RUN mkdir -p /etc/apt/certs
-COPY repo_certs.zip /tmp/
-RUN unzip /tmp/repo_certs.zip
-RUN cd /etc/apt/certs && unzip -j /tmp/repo_certs.zip && rm /tmp/repo_certs.zip
-RUN chmod 600 /etc/apt/certs/*
-
 RUN mkdir -p /var/log/supervisor
 RUN echo 'root:root' | chpasswd
 EXPOSE 22
@@ -25,10 +17,7 @@ ENV LC_ALL en_US.UTF-8
 COPY sysctl /sbin/sysctl
 RUN sed -e 's/\#\(precedence ::ffff:0:0\/96  100\)/\1/g' -i /etc/gai.conf
 
-# v10
-#RUN echo deb http://repo.cw-ngv.com/latest binary/ > /etc/apt/sources.list.d/clearwater.list
-# v11
-RUN echo deb https://repo.cw-ngv.com/~staging-cc/repo binary/ > /etc/apt/sources.list.d/clearwater.list
+RUN echo deb http://repo.cw-ngv.com/stable binary/ > /etc/apt/sources.list.d/clearwater.list
 
 RUN curl -L http://repo.cw-ngv.com/repo_key | apt-key add -
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --force-yes clearwater-infrastructure clearwater-auto-config-docker clearwater-management
@@ -53,8 +42,6 @@ RUN echo "scscf_uri=\"sip:sprout:5054;transport=tcp\"" >> /etc/clearwater/shared
 RUN echo "icscf_uri=\"sip:sprout:5052;transport=tcp\"" >> /etc/clearwater/shared_config
 RUN echo 'snmp_ip=stats-engine.$ZONE'      >> /etc/clearwater/shared_config
 RUN echo 'snmp_notification_types=rfc3877' >> /etc/clearwater/shared_config
-RUN echo 'local_site_name=$LOCAL_SITE'     >> /etc/clearwater/shared_config
-RUN echo 'remote_site_name=$REMOTE_SITE'   >> /etc/clearwater/shared_config
 RUN echo 'sas_server=sas.$ZONE'            >> /etc/clearwater/shared_config
 
 COPY liveness.sh /usr/share/kubernetes/

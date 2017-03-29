@@ -6,9 +6,9 @@ metadata:
     instance-type: etcd-pod
 spec:
   ports:
-  - name: "2379"
+  - name: "etcd-client"
     port: 2379
-  - name: "2380"
+  - name: "etcd-server"
     port: 2380
   - name: "4001"
     port: 4001

@@ -1,25 +1,27 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  labels:
-    service: ralf
   name: ralf
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      service: ralf
   template:
     metadata:
       labels:
         service: ralf
+        snmp: enabled
     spec:
       containers:
-      - image: "clearwater/ralf:latest"
+      - image: "gcr.io/angelic-mender-163009/ralf:latest"
         name: ralf
         ports:
         - containerPort: 22
         - containerPort: 10888
         env:
         - name: ZONE
-          value: ZONE_VALUE
+          value: default.svc.cluster.local
         - name: MY_POD_IP
           valueFrom:
             fieldRef:

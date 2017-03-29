@@ -8,7 +8,5 @@ RUN apt-get install -y --force-yes clearwater-snmp-handler-astaire
 
 COPY sprout.supervisord.conf /etc/supervisor/conf.d/sprout.conf
 COPY clearwater-group.supervisord.conf /etc/supervisor/conf.d/clearwater-group.conf
-COPY plugins/* /usr/share/clearwater/clearwater-cluster-manager/plugins/
-COPY reload_memcached_users /usr/share/clearwater/bin/reload_memcached_users
 
 EXPOSE 5052 5054

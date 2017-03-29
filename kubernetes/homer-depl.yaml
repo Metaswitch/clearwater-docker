@@ -1,8 +1,6 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  labels:
-    service: homer
   name: homer
 spec:
   replicas: 1
@@ -12,14 +10,14 @@ spec:
         service: homer
     spec:
       containers:
-      - image: "clearwater/homer:latest"
+      - image: "gcr.io/angelic-mender-163009/homer:latest"
         name: homer
         ports:
         - containerPort: 22
         - containerPort: 7888
         env:
         - name: ZONE
-          value: ZONE_VALUE
+          value: default.svc.cluster.local
         - name: MY_POD_IP
           valueFrom:
             fieldRef:

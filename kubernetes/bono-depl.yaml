@@ -4,13 +4,17 @@ metadata:
   name: bono
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      service: bono
   template:
     metadata:
       labels:
         service: bono
+        snmp: enabled
     spec:
       containers:
-      - image: "clearwater/bono:latest"
+      - image: "gcr.io/angelic-mender-163009/bono:latest"
         name: bono
         ports:
         - containerPort: 22
@@ -23,7 +27,7 @@ spec:
           protocol: "UDP"
         env:
         - name: ZONE
-          value: ZONE_VALUE
+          value: default.svc.cluster.local
         - name: MY_POD_IP
           valueFrom:
             fieldRef:
