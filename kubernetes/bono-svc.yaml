@@ -3,8 +3,7 @@ kind: Service
 metadata:
   name: bono
 spec:
-  #type: SVC_TYPE
-  #loadBalancerIP: LB_IP
+  type: "LoadBalancer"
   ports:
   - name: "5060"
     port: 5060
@@ -16,15 +15,13 @@ spec:
     #nodePort: 30062
   selector:
     service: bono
-  clusterIP: None
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: bono-tcp
 spec:
-  #type: SVC_TYPE
-  #loadBalancerIP: LB_IP
+  type: "LoadBalancer"
   ports:
   - name: "3478"
     port: 3478
@@ -37,4 +34,3 @@ spec:
     #nodePort: 31062
   selector:
     service: bono
-  clusterIP: None
