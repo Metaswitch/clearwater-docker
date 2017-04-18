@@ -10,7 +10,7 @@ spec:
         service: ellis
     spec:
       containers:
-      - image: "gcr.io/angelic-mender-163009/ellis:latest"
+      - image: "<MY_REPO>/ellis:latest"
         name: ellis
         ports:
         - containerPort: 22

@@ -14,7 +14,7 @@ spec:
         snmp: enabled
     spec:
       containers:
-      - image: "gcr.io/angelic-mender-163009/homestead:latest"
+      - image: "<MY_REPO>/homestead:latest"
         name: homestead
         ports:
         - containerPort: 22

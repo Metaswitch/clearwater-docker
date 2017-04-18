@@ -14,7 +14,7 @@ spec:
         snmp: enabled
     spec:
       containers:
-      - image: "gcr.io/angelic-mender-163009/ralf:latest"
+      - image: "<MY_REPO>/ralf:latest"
         name: ralf
         ports:
         - containerPort: 22

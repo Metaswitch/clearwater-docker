@@ -14,7 +14,7 @@ spec:
         snmp: enabled
     spec:
       containers:
-      - image: "gcr.io/angelic-mender-163009/bono:latest"
+      - image: "<MY_REPO>/bono:latest"
         name: bono
         ports:
         - containerPort: 22

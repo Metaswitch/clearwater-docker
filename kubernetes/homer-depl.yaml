@@ -10,7 +10,7 @@ spec:
         service: homer
     spec:
       containers:
-      - image: "gcr.io/angelic-mender-163009/homer:latest"
+      - image: "<MY_REPO>/homer:latest"
         name: homer
         ports:
         - containerPort: 22

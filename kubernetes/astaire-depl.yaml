@@ -10,7 +10,7 @@ spec:
         service: astaire
     spec:
       containers:
-      - image: "gcr.io/angelic-mender-163009/astaire:latest"
+      - image: "<MY_REPO>/astaire:latest"
         name: astaire
         ports:
         - containerPort: 22

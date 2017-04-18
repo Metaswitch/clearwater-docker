@@ -14,7 +14,7 @@ spec:
         snmp: enabled
     spec:
       containers:
-      - image: "gcr.io/angelic-mender-163009/sprout:latest"
+      - image: "<MY_REPO>/sprout:latest"
         name: sprout
         ports:
         - containerPort: 22

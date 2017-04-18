@@ -10,7 +10,7 @@ spec:
         service: cassandra
     spec:
       containers:
-      - image: "gcr.io/angelic-mender-163009/cassandra:latest"
+      - image: "<MY_REPO>/cassandra:latest"
         name: cassandra
         ports:
         - containerPort: 22
