@@ -22,12 +22,15 @@ spec:
         - http://$(MY_POD_IP):2380
         - --listen-peer-urls
         - http://0.0.0.0:2380
-        # Using central discvovery:
-        #- --discovery
-        #- http://discovery.etcd.io/401ccd1143f1a06cf105840dbc3a4e36
-        # Could also have these instead of --discovery (but only for one pod cluster)
+        # By default use a single pod cluster 
         - --initial-cluster
         - $(MY_POD_NAME)=http://$(MY_POD_IP):2380
+        # Alternatively multi-pod clusters can be supported Using central discvovery.  Run e.g.
+        #   curl https://discovery.etcd.io/new?size=3 | sed s/https/http/
+        # to get a discovery URL for a 3 pod cluster, substitute the returned value below, and 
+        # set replicas: 3 above.
+        #- --discovery
+        #- <URL returned by command above>
         - --initial-cluster-state
         - new
         env:
