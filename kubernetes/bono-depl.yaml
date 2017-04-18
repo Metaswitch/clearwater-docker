@@ -14,7 +14,7 @@ spec:
         snmp: enabled
     spec:
       containers:
-      - image: "<MY_REPO>/bono:latest"
+      - image: "<MY_REPO>/clearwater/bono:latest"
         name: bono
         ports:
         - containerPort: 22

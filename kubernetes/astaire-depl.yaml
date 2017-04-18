@@ -10,7 +10,7 @@ spec:
         service: astaire
     spec:
       containers:
-      - image: "<MY_REPO>/astaire:latest"
+      - image: "<MY_REPO>/clearwater/astaire:latest"
         name: astaire
         ports:
         - containerPort: 22

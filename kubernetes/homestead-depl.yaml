@@ -14,7 +14,7 @@ spec:
         snmp: enabled
     spec:
       containers:
-      - image: "<MY_REPO>/homestead:latest"
+      - image: "<MY_REPO>/clearwater/homestead:latest"
         name: homestead
         ports:
         - containerPort: 22
