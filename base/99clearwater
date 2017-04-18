@@ -1,7 +1,0 @@
-Acquire::https::repo.cw-ngv.com {  
-  Verify-Peer "true";  
-  Verify-Host "true";  
-  CaInfo      "/etc/apt/certs/repository-ca.crt";  
-  SslKey      "/etc/apt/certs/repository-client-msw-internal.key";  
-  SslCert    "/etc/apt/certs/repository-client-msw-internal.crt";  
-}
