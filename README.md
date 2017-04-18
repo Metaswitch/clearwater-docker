@@ -80,7 +80,7 @@ If you scale up the clusters of storage nodes, you can monitor progress as new n
 Instead of using Docker Compose, you can deploy Clearwater in Kubernetes. This
 requires a Kubernetes cluster, and a Docker repository.
 
-### Prepare the images
+### Prepare the images and edit the yaml files
 
 - First, build all the required images locally.
 
@@ -96,10 +96,12 @@ requires a Kubernetes cluster, and a Docker repository.
             docker push path_to_your_repo/clearwater/$i:latest
         done
 
-- Finally, change the image paths in the Kubernetes files. For every file
-  ending `-rc.yaml`, edit the image path to be the correct path for your
-  repository.
-
+- Update the Kubernetes yaml to match your deployment.   
+  - In each file ending depl.yaml you will need to:
+    - edit the image path to match the path to the repository that you pushed your images to
+    - edit the value of the ZONE attribute to match the domain of your Kubernetes cluster -- by default it is "default.svc.cluster.local" which will work for a "default" Kubernetes cluster
+  - The bono-svc.yaml and ellis-svc.yaml files configure external load balancers to expose SIP access and provisioning access from outside of the cluster.   This will work as is on GKE, but alternative configuration will be required for Kubernetes running on other providers.
+  
 
 ### Deploy Clearwater in Kubernetes
 
