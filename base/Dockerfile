@@ -40,8 +40,5 @@ RUN sed -i 's/^\( \+s\/^sprout_hostname=.*\)/\1\n    s\/^icscf_uri=.*\/icscf_uri
 RUN sed -i 's/^\( \+s\/^sprout_hostname=.*\)/\1\n    s\/^scscf_uri=.*\/scscf_uri="'\''$scscf_uri'\''"\//' /etc/init.d/clearwater-auto-config-docker
 RUN echo "scscf_uri=\"sip:sprout:5054;transport=tcp\"" >> /etc/clearwater/shared_config
 RUN echo "icscf_uri=\"sip:sprout:5052;transport=tcp\"" >> /etc/clearwater/shared_config
-RUN echo 'snmp_ip=stats-engine.$ZONE'      >> /etc/clearwater/shared_config
-RUN echo 'snmp_notification_types=rfc3877' >> /etc/clearwater/shared_config
-RUN echo 'sas_server=sas.$ZONE'            >> /etc/clearwater/shared_config
 
 COPY liveness.sh /usr/share/kubernetes/
