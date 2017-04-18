@@ -100,7 +100,7 @@ requires a Kubernetes cluster, and a Docker repository.
   - In each file ending depl.yaml you will need to:
     - edit the image path to match the path to the repository that you pushed your images to
     - edit the value of the ZONE attribute to match the domain of your Kubernetes cluster -- by default it is "default.svc.cluster.local" which will work for a "default" Kubernetes cluster
-  - The bono-svc.yaml and ellis-svc.yaml files configure external load balancers to expose SIP access and provisioning access from outside of the cluster.   This will work as is on GKE, but alternative configuration will be required for Kubernetes running on other providers.
+  - The bono-svc.yaml and ellis-svc.yaml files configure external load balancers to expose SIP access and provisioning access from outside of the cluster.   This will work as is if you are running on a cloud provider that support this -- e.g. GKE -- but alternative configuration will be required for Kubernetes running in other environments.
   
 
 ### Deploy Clearwater in Kubernetes
