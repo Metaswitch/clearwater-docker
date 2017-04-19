@@ -59,9 +59,9 @@ To start the Clearwater services, run:
 
 #### Scaling the deployment
 
-Having started up a deployment, it is then possible to scale it by adding more Sprout, Memcached, Chronos or Cassandra nodes.   E.g. to spin up an additional node of each of these types, run:
+Having started up a deployment, it is then possible to scale it by adding more Sprout, Astaire, Chronos or Cassandra nodes.   E.g. to spin up an additional node of each of these types, run:
 
-    sudo docker-compose -f minimal-distributed.yaml scale sprout=2 memcached=2 chronos=2 cassandra=2
+    sudo docker-compose -f minimal-distributed.yaml scale sprout=2 astaire=2 chronos=2 cassandra=2
 
 Note that scaling of Docker deployments is a work in progress and there are currently a number of known issues...
 
@@ -86,11 +86,11 @@ requires a Kubernetes cluster, and a Docker repository.
 
         # Build the Clearwater docker images.
         cd clearwater-docker
-        for i in base memcached cassandra chronos bono ellis homer homestead ralf sprout ; do docker build -t clearwater/$i $i ; done
+        for i in base astaire cassandra chronos bono ellis homer homestead ralf sprout ; do docker build -t clearwater/$i $i ; done
 
 - Next, push them to your repository (which must be accessible from the Kubernetes deployment)
 
-        for i in base memcached cassandra chronos bono ellis homer homestead ralf sprout
+        for i in base astaire cassandra chronos bono ellis homer homestead ralf sprout
         do
             docker tag -f clearwater/$i:latest path_to_your_repo/clearwater/$i:latest
             docker push path_to_your_repo/clearwater/$i:latest
@@ -117,7 +117,7 @@ To prepare your system to deploy Clearwater without using Compose, after running
 
     # Build the Clearwater docker images.
     cd clearwater-docker
-    for i in base memcached cassandra chronos bono ellis homer homestead ralf sprout ; do sudo docker build -t clearwater/$i $i ; done
+    for i in base astaire cassandra chronos bono ellis homer homestead ralf sprout ; do sudo docker build -t clearwater/$i $i ; done
 
 #### Starting Clearwater
 
@@ -125,7 +125,7 @@ To start the Clearwater services, run:
 
     sudo docker network create --driver bridge clearwater_nw
     sudo docker run -d --net=clearwater_nw --name etcd quay.io/coreos/etcd:v2.2.5 -name etcd0 -advertise-client-urls http://etcd:2379,http://etcd:4001 -listen-client-urls http://0.0.0.0:2379,http://0.0.0.0:4001 -initial-advertise-peer-urls http://etcd:2380 -listen-peer-urls http://0.0.0.0:2380  -initial-cluster etcd0=http://etcd:2380 -initial-cluster-state new
-    sudo docker run -d --net=clearwater_nw --name memcached -p 22 clearwater/memcached
+    sudo docker run -d --net=clearwater_nw --name astaire -p 22 clearwater/astaire
     sudo docker run -d --net=clearwater_nw --name cassandra -p 22 clearwater/cassandra
     sudo docker run -d --net=clearwater_nw --name chronos -p 22 clearwater/chronos
     sudo docker run -d --net=clearwater_nw --name homestead -p 22 clearwater/homestead
@@ -139,9 +139,9 @@ The Clearwater Docker images use DNS for service discovery - they require, for e
 
 #### Scaling the deployment
 
-It is possible to spin up additional Sprout, Cassandra, Memcached and Chronos nodes simply by repeating the relevant command `docker run` command but providing a different name.   E.g.
+It is possible to spin up additional Sprout, Cassandra, Astaire and Chronos nodes simply by repeating the relevant command `docker run` command but providing a different name.   E.g.
 
-    sudo docker run -d --net=clearwater_nw --name memcached_2 -p 22 clearwater/memcached
+    sudo docker run -d --net=clearwater_nw --name astaire_2 -p 22 clearwater/astaire
 
 Scaling of clearwater-docker deployments is work in progress though, so see the limitations described above (for scaling using Compose).
 
