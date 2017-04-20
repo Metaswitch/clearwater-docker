@@ -3,16 +3,17 @@ kind: Service
 metadata:
   name: bono
 spec:
-  type: "LoadBalancer"
+  #type: "LoadBalancer"
+  type: NodePort
   ports:
   - name: "5060"
     port: 5060
     protocol: "UDP"
-    #nodePort: 30060
+    nodePort: 30060
   - name: "5062"
     port: 5062
     protocol: "UDP"
-    #nodePort: 30062
+    nodePort: 30062
   selector:
     service: bono
 ---
@@ -21,16 +22,17 @@ kind: Service
 metadata:
   name: bono-tcp
 spec:
-  type: "LoadBalancer"
+  #type: "LoadBalancer"
+  type: NodePort
   ports:
   - name: "3478"
     port: 3478
-    #nodePort: 30478
+    nodePort: 30478
   - name: "5060"
     port: 5060
-    #nodePort: 31060
+    nodePort: 31060
   - name: "5062"
     port: 5062
-    #nodePort: 31062
+    nodePort: 31062
   selector:
     service: bono

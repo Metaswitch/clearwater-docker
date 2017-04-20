@@ -2,9 +2,9 @@
 
 This repository contains [Dockerfiles](https://docs.docker.com/reference/builder/) for use with [Docker](https://www.docker.com/) and [Compose](https://docs.docker.com/compose/) to deploy [Project Clearwater](http://www.projectclearwater.org).
 
-There are three options for installing Docker:
+There are three options for installing Docker -- the first two are recommended:
 
-- Using Docker Compose. This is the recommended approach.
+- Using Docker Compose.
 
 - Using Kuberenetes.
 
@@ -100,8 +100,16 @@ requires a Kubernetes cluster, and a Docker repository.
   - In each file ending depl.yaml you will need to:
     - edit the image path to match the path to the repository that you pushed your images to
     - edit the value of the ZONE attribute to match the domain of your Kubernetes cluster -- by default it is "default.svc.cluster.local" which will work for a "default" Kubernetes cluster
-  - The bono-svc.yaml and ellis-svc.yaml files configure external load balancers to expose SIP access and provisioning access from outside of the cluster.   This will work as is if you are running on a cloud provider that support this -- e.g. GKE -- but alternative configuration will be required for Kubernetes running in other environments.
-  
+  - Decide how you want to access Bono and Ellis from outside of the cluster.    By default the Bono and Ellis services are exposed as NodePorts.   They can be accessed via the IP address of any of your cluster nodes, using the following ports:
+    - Ellis: 30080
+    - Bono (UDP): 30060
+    - Bono (TCP): 31060, 31062
+    If you are running in a cloud provider you may alternatively choose to expose these services via a LoadBalancer.   To do this simply change the service "Type" to LoadBalancer in ellis-svc.depl and bono-svc.depl.
+     
+    Note if you are running in GKE and use the LoadBalancer option then firewall rules will be configured automatically.    If you choose to use the default NodePort option then you will need to add the firewall rules manually.   This can be done from the command line using gcloud if you have it installed.  e.g.
+    - gcloud compute firewall-rules create bono-udp --allow udp:30060
+    - gcloud compute firewall-rules create bono-tcp --allow tcp:30478,tcp:31060,tcp:31062
+    - gcloud compute firewall-rules create ellis --allow tcp:30080
 
 ### Deploy Clearwater in Kubernetes
 
