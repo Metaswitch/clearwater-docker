@@ -39,11 +39,6 @@ services:
       - "5062:5062"
   sprout:
     build: sprout
-    networks:
-      default:
-        aliases:
-          - scscf.sprout
-          - icscf.sprout
     ports:
       - 22
   homestead:
