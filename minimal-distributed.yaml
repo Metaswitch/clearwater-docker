@@ -1,6 +1,6 @@
 # Don't define "links" between services.   They aren't necessary and they break load balancing if you later
 # scale up the storage nodes.
-version: '2'
+version: '2.1'
 services:
   etcd:
     image: quay.io/coreos/etcd:v2.2.5
@@ -21,6 +21,8 @@ services:
     ports:
       - 22
   cassandra:
+    sysctls:
+       net.ipv6.conf.lo.disable_ipv6: 0
     build: cassandra
     ports:
       - 22
@@ -37,11 +39,6 @@ services:
       - "5062:5062"
   sprout:
     build: sprout
-    networks:
-      default:
-        aliases:
-          - scscf.sprout
-          - icscf.sprout
     ports:
       - 22
   homestead:

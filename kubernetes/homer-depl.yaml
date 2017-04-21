@@ -1,0 +1,32 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: homer
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        service: homer
+    spec:
+      containers:
+      - image: "<MY_REPO>/clearwater/homer:latest"
+        name: homer
+        ports:
+        - containerPort: 22
+        - containerPort: 7888
+        env:
+        - name: ZONE
+          value: default.svc.cluster.local
+        - name: MY_POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        livenessProbe:
+          tcpSocket:
+            port: 7888
+          initialDelaySeconds: 30
+        readinessProbe:
+          tcpSocket:
+            port: 7888
+      restartPolicy: Always

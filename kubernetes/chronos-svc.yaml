@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: chronos
+spec:
+  ports:
+  - name: "7253"
+    port: 7253
+  selector:
+    service: chronos
+  clusterIP: None

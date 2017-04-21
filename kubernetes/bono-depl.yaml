@@ -1,0 +1,51 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: bono
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      service: bono
+  template:
+    metadata:
+      labels:
+        service: bono
+        snmp: enabled
+    spec:
+      containers:
+      - image: "<MY_REPO>/clearwater/bono:latest"
+        name: bono
+        ports:
+        - containerPort: 22
+        - containerPort: 3478
+        - containerPort: 5060
+        - containerPort: 5062
+        - containerPort: 5060
+          protocol: "UDP"
+        - containerPort: 5062
+          protocol: "UDP"
+        env:
+        - name: PUBLIC_IP
+          value: <BONO_PUBLIC_IP>
+        - name: ZONE
+          value: default.svc.cluster.local
+        - name: MY_POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        livenessProbe:
+          exec:
+            command: ["nc", "-z", "-w", "5", "127.0.0.1", "5060"]
+          initialDelaySeconds: 30
+        readinessProbe:
+          tcpSocket:
+            port: 5060
+        livenessProbe:
+          exec:
+            command: ["/bin/bash", "/usr/share/kubernetes/liveness.sh", "3478 5060 5062"]
+          initialDelaySeconds: 30
+        readinessProbe:
+          exec:
+            command: ["/bin/bash", "/usr/share/kubernetes/liveness.sh", "3478 5060 5062"]
+      restartPolicy: Always

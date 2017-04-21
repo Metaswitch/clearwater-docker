@@ -1,0 +1,36 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: ralf
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      service: ralf
+  template:
+    metadata:
+      labels:
+        service: ralf
+        snmp: enabled
+    spec:
+      containers:
+      - image: "<MY_REPO>/clearwater/ralf:latest"
+        name: ralf
+        ports:
+        - containerPort: 22
+        - containerPort: 10888
+        env:
+        - name: ZONE
+          value: default.svc.cluster.local
+        - name: MY_POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        livenessProbe:
+          tcpSocket:
+            port: 10888
+          initialDelaySeconds: 30
+        readinessProbe:
+          tcpSocket:
+            port: 10888
+      restartPolicy: Always

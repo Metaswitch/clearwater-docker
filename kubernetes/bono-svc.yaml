@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: bono
+spec:
+  type: "LoadBalancer"  
+  loadBalancerIP: <BONO_PUBLIC_IP>
+  ports:
+  - name: "3478"
+    port: 3478
+  - name: "5060"
+    port: 5060
+  - name: "5062"
+    port: 5062
+  selector:
+    service: bono

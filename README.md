@@ -2,10 +2,14 @@
 
 This repository contains [Dockerfiles](https://docs.docker.com/reference/builder/) for use with [Docker](https://www.docker.com/) and [Compose](https://docs.docker.com/compose/) to deploy [Project Clearwater](http://www.projectclearwater.org).
 
-There are two options for installing Docker:
+There are three options for installing Docker -- the first two are recommended:
 
-- using Docker Compose, which sets up appropriate connections between Docker containers. This is the recommended approach.
-- manually, if Docker Compose isn't available. In this case you need to use some Docker options to set up the networking config that Compose would set up automatically.
+- Using Docker Compose.
+
+- Using Kuberenetes.
+
+- Manually. In this case you need to use some Docker options to set up the
+  networking config that Compose or Kubernetes would set up automatically.
 
 You should follow the "Common Preparation" section, then either the "Using Compose" or the "Manual Turn-Up" section.
 
@@ -21,19 +25,19 @@ To prepare your system to deploy Clearwater on Docker, run:
     # Checkout clearwater-docker.
     # Either:
     git clone --recursive git@github.com:Metaswitch/clearwater-docker.git
-
     # Or:
     git clone --recursive https://github.com/Metaswitch/clearwater-docker.git
 
-Edit clearwater-docker/.env so that PUBLIC_IP is set to an IP address that can be used by SIP clients to access the docker host.   E.g. if you are running in AWS, this wants to be the public IP of your AWS VM.
-
-If you want to be able to monitor your Docker deployment via a web UI then you might like to install and run [Weave Scope](https://www.weave.works/products/weave-scope/).  This only takes a minute to [install](https://www.weave.works/install-weave-scope/) and provides real time visualizations showing all of your containers, their resource usage and the connectivity between them.
+If deploying with compose or manually
+- edit clearwater-docker/.env so that PUBLIC_IP is set to an IP address that can be used by SIP clients to access the docker host.   E.g. if you are running in AWS, this wants to be the public IP of your AWS VM.   Note: this file is not used when deploying on Kubernetes.
+- if you want to be able to monitor your Docker deployment via a web UI then you might like to install and run [Weave Scope](https://www.weave.works/products/weave-scope/).  This only takes a minute to [install](https://www.weave.works/install-weave-scope/) and provides real time visualizations showing all of your containers, their resource usage and the connectivity between them.
 
 ![alt text](docs/images/clearwater-docker in scope.jpg "Clearwater-Docker dispayed in Scope")
 
 ## Using Compose
 
 There is a [Compose file](minimal-distributed.yaml) to instantiate a minimal (non-fault-tolerant) distributed Clearwater deployment under Docker.
+  - 104.155.15.20
 
 #### Preparation
 
@@ -56,9 +60,9 @@ To start the Clearwater services, run:
 
 #### Scaling the deployment
 
-Having started up a deployment, it is then possible to scale it by adding more Sprout, Memcached, Chronos or Cassandra nodes.   E.g. to spin up an additional node of each of these types, run:
+Having started up a deployment, it is then possible to scale it by adding more Sprout, Astaire, Chronos or Cassandra nodes.   E.g. to spin up an additional node of each of these types, run:
 
-    sudo docker-compose -f minimal-distributed.yaml scale sprout=2 memcached=2 chronos=2 cassandra=2
+    sudo docker-compose -f minimal-distributed.yaml scale sprout=2 astaire=2 chronos=2 cassandra=2
 
 Note that scaling of Docker deployments is a work in progress and there are currently a number of known issues...
 
@@ -72,6 +76,56 @@ Note that scaling of Docker deployments is a work in progress and there are curr
 
 If you scale up the clusters of storage nodes, you can monitor progress as new nodes join the clusters by running `utils/show_cluster_state.sh`.
 
+## Using Kubernetes
+
+Instead of using Docker Compose, you can deploy Clearwater in Kubernetes. This requires a Kubernetes cluster, and a Docker repository.
+
+### Prepare the images and edit the yaml files
+
+- First, build all the required images locally.
+
+        # Build the Clearwater docker images.
+        cd clearwater-docker
+        for i in base astaire cassandra chronos bono ellis homer homestead ralf sprout ; do docker build -t clearwater/$i $i ; done
+
+- Next, push them to your repository (which must be accessible from the Kubernetes deployment)
+
+        for i in base astaire cassandra chronos bono ellis homer homestead ralf sprout
+        do
+            docker tag clearwater/$i:latest path_to_your_repo/clearwater/$i:latest
+            docker push path_to_your_repo/clearwater/$i:latest
+        done
+
+- Update the Kubernetes yaml to match your deployment.   
+
+  - In each file ending depl.yaml you will need to:
+    - edit the image path to match the path to the repository that you pushed your images to
+    - edit the value of the ZONE attribute to match the domain of your Kubernetes cluster -- by default it is "default.svc.cluster.local" which will work for a "default" Kubernetes cluster
+
+  - Decide how you want to access Bono and Ellis from outside of the cluster.    
+
+    - By default Ellis is exposed via a NodePort service.  It can be accessed via the IP address of any of your cluster nodes on port 30080.   If you wish to change this you can do so by modifying ellis-svc.yaml.
+
+      Depending on your platform you may need to manually create a firewall rule to allow access to this port.  E.g. on GKE this can be done from the command line using gcloud if you have it installed.  e.g.
+      - gcloud compute firewall-rules create ellis --allow tcp:30080
+
+    - Bono is more challenging to expose due to the following requirements.
+      - Each Bono pod must be configured with an externally routable IP address by which that specific pod can be uniquely accessed (configured in bono-depl.yaml as the PUBLIC_IP).  Bono will record-route itself in SIP messages using this IP and susbequent SIP messages to that IP address must be guaranteed to hit the same Bono instance.
+      - Port 5060 in the Bono pod must be accessible via port 5060 on the external IP address.   It is not possible to e.g. NAT port 5060 in the pod to port 30060 on the external IP.   This is because Bono always record-route's itself in SIP messages as <PUBLIC_IP>:5060.
+
+      In the default kubernetes configuration we expose Bono using a LoadBalancer service with a statically assigned external IP address.  This means that 
+      - you can only have a single Bono instance (as subsequent SIP requests in a session must be guaranteed to be routed back to the same Bono instance so you cannot have the load balancer balance across multiple Bonos)
+      - the deployment can only support SIP over UDP or SIP over TCP (not both simultaneously) as Bono cannot have separate external IP addresses for each of UDP and TCP, and a single Kubernetes LoadBalancer service can't support multiple protocols.  By default bono-svc.yaml is configured to expose SIP over TCP.
+
+      To use the default configuration you must ensure that
+      - your Kubernetes cluster is running on a platform that supports LoadBalancer services
+      - there is a static external IP address available that the load balancer can use (e.g. on GKE you must explicitly provision this first)
+      - you must replace the value of `loadBalancerIP` in bono-svc.yaml and `PUBLIC_IP` in bono-depl.yaml with this external IP address.
+
+### Deploy Clearwater in Kubernetes
+
+To deploy the images, you should simply do `kubectl create -f clearwater-docker/kubernetes`.   It may take a minute or so before the deployment is fully established, the load balancer is created, and the deployment is ready to accept calls.
+
 ## Manual Turn-Up
 
 If you can't or don't want to use Compose, you can turn the deployment up manually under Docker.
@@ -82,7 +136,7 @@ To prepare your system to deploy Clearwater without using Compose, after running
 
     # Build the Clearwater docker images.
     cd clearwater-docker
-    for i in base memcached cassandra chronos bono ellis homer homestead ralf sprout ; do sudo docker build -t clearwater/$i $i ; done
+    for i in base astaire cassandra chronos bono ellis homer homestead ralf sprout ; do sudo docker build -t clearwater/$i $i ; done
 
 #### Starting Clearwater
 
@@ -90,8 +144,8 @@ To start the Clearwater services, run:
 
     sudo docker network create --driver bridge clearwater_nw
     sudo docker run -d --net=clearwater_nw --name etcd quay.io/coreos/etcd:v2.2.5 -name etcd0 -advertise-client-urls http://etcd:2379,http://etcd:4001 -listen-client-urls http://0.0.0.0:2379,http://0.0.0.0:4001 -initial-advertise-peer-urls http://etcd:2380 -listen-peer-urls http://0.0.0.0:2380  -initial-cluster etcd0=http://etcd:2380 -initial-cluster-state new
-    sudo docker run -d --net=clearwater_nw --name memcached -p 22 clearwater/memcached
-    sudo docker run -d --net=clearwater_nw --name cassandra -p 22 clearwater/cassandra
+    sudo docker run -d --net=clearwater_nw --name astaire -p 22 clearwater/astaire
+    sudo docker run -d --net=clearwater_nw --name cassandra -p 22 --sysctl net.ipv6.conf.lo.disable_ipv6=0 clearwater/cassandra
     sudo docker run -d --net=clearwater_nw --name chronos -p 22 clearwater/chronos
     sudo docker run -d --net=clearwater_nw --name homestead -p 22 clearwater/homestead
     sudo docker run -d --net=clearwater_nw --name homer -p 22 clearwater/homer
@@ -104,9 +158,9 @@ The Clearwater Docker images use DNS for service discovery - they require, for e
 
 #### Scaling the deployment
 
-It is possible to spin up additional Sprout, Cassandra, Memcached and Chronos nodes simply by repeating the relevant command `docker run` command but providing a different name.   E.g.
+It is possible to spin up additional Sprout, Cassandra, Astaire and Chronos nodes simply by repeating the relevant command `docker run` command but providing a different name.   E.g.
 
-    sudo docker run -d --net=clearwater_nw --name memcached_2 -p 22 clearwater/memcached
+    sudo docker run -d --net=clearwater_nw --name astaire_2 -p 22 clearwater/astaire
 
 Scaling of clearwater-docker deployments is work in progress though, so see the limitations described above (for scaling using Compose).
 

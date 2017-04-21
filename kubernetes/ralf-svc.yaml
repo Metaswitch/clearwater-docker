@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ralf
+spec:
+  ports:
+  - name: "10888"
+    port: 10888
+  selector:
+    service: ralf
+  clusterIP: None

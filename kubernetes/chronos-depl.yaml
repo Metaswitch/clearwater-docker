@@ -1,0 +1,32 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    service: chronos
+  name: chronos
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        service: chronos
+    spec:
+      containers:
+      - image: "<MY_REPO>/clearwater/chronos:latest"
+        name: chronos
+        ports:
+        - containerPort: 22
+        - containerPort: 7253
+        env:
+        - name: MY_POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        livenessProbe:
+          tcpSocket:
+            port: 7253
+          initialDelaySeconds: 30
+        readinessProbe:
+          tcpSocket:
+            port: 7253
+      restartPolicy: Always

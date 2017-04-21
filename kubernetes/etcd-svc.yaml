@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: etcd
+  labels:
+    instance-type: etcd-pod
+spec:
+  ports:
+  - name: "etcd-client"
+    port: 2379
+  - name: "etcd-server"
+    port: 2380
+  - name: "4001"
+    port: 4001
+  selector:
+    instance-type: etcd-pod
+  clusterIP: None

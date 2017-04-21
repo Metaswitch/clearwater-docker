@@ -1,0 +1,35 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: cassandra
+spec:
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        service: cassandra
+    spec:
+      containers:
+      - image: "<MY_REPO>/clearwater/cassandra:latest"
+        name: cassandra
+        ports:
+        - containerPort: 22
+        - containerPort: 7001
+        - containerPort: 9042
+        - containerPort: 9160
+        env:
+        - name: MY_POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: ZONE
+          value: default.svc.cluster.local
+        livenessProbe:
+          exec:
+            command: ["/bin/bash", "/usr/share/kubernetes/liveness.sh", "7000 9042 9160"]
+          # Cassandra can take a very, very long time to start up
+          initialDelaySeconds: 600
+        readinessProbe:
+          exec:
+            command: ["/bin/bash", "/usr/share/kubernetes/liveness.sh", "7000 9042 9160"]
+      restartPolicy: Always
