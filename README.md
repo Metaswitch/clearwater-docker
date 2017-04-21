@@ -115,12 +115,12 @@ Instead of using Docker Compose, you can deploy Clearwater in Kubernetes. This r
 
       In the default kubernetes configuration we expose Bono using a LoadBalancer service with a statically assigned external IP address.  This means that 
       - you can only have a single Bono instance (as subsequent SIP requests in a session must be guaranteed to be routed back to the same Bono instance so you cannot have the load balancer balance across multiple Bonos)
-      - the deplyment can only support SIP over UDP or SIP over TCP (not both simultaneously) as Bono cannot have separate external IP addresses for each of UDP and TCP, and a single Kubernetes LoadBalancer service can't support multiple protocols.  By default bono-svc.yaml is configured to expose SIP over TCP.
+      - the deployment can only support SIP over UDP or SIP over TCP (not both simultaneously) as Bono cannot have separate external IP addresses for each of UDP and TCP, and a single Kubernetes LoadBalancer service can't support multiple protocols.  By default bono-svc.yaml is configured to expose SIP over TCP.
 
       To use the default configuration you must ensure that
       - your Kubernetes cluster is running on a platform that supports LoadBalancer services
       - there is a static external IP address available that the load balancer can use (e.g. on GKE you must explicitly provision this first)
-      - you must replace the value of loadBalancerIP in bono-svc.yaml and PUBLIC_IP in bono-depl.yaml with this external IP address.
+      - you must replace the value of `loadBalancerIP` in bono-svc.yaml and `PUBLIC_IP` in bono-depl.yaml with this external IP address.
 
 ### Deploy Clearwater in Kubernetes
 
