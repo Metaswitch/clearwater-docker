@@ -92,7 +92,7 @@ requires a Kubernetes cluster, and a Docker repository.
 
         for i in base astaire cassandra chronos bono ellis homer homestead ralf sprout
         do
-            docker tag -f clearwater/$i:latest path_to_your_repo/clearwater/$i:latest
+            docker tag clearwater/$i:latest path_to_your_repo/clearwater/$i:latest
             docker push path_to_your_repo/clearwater/$i:latest
         done
 
