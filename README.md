@@ -28,15 +28,16 @@ To prepare your system to deploy Clearwater on Docker, run:
     # Or:
     git clone --recursive https://github.com/Metaswitch/clearwater-docker.git
 
-Edit clearwater-docker/.env so that PUBLIC_IP is set to an IP address that can be used by SIP clients to access the docker host.   E.g. if you are running in AWS, this wants to be the public IP of your AWS VM.
-
-If you want to be able to monitor your Docker deployment via a web UI then you might like to install and run [Weave Scope](https://www.weave.works/products/weave-scope/).  This only takes a minute to [install](https://www.weave.works/install-weave-scope/) and provides real time visualizations showing all of your containers, their resource usage and the connectivity between them.
+If deploying with compose or manually
+- edit clearwater-docker/.env so that PUBLIC_IP is set to an IP address that can be used by SIP clients to access the docker host.   E.g. if you are running in AWS, this wants to be the public IP of your AWS VM.   Note: this file is not used when deploying on Kubernetes.
+- if you want to be able to monitor your Docker deployment via a web UI then you might like to install and run [Weave Scope](https://www.weave.works/products/weave-scope/).  This only takes a minute to [install](https://www.weave.works/install-weave-scope/) and provides real time visualizations showing all of your containers, their resource usage and the connectivity between them.
 
 ![alt text](docs/images/clearwater-docker in scope.jpg "Clearwater-Docker dispayed in Scope")
 
 ## Using Compose
 
 There is a [Compose file](minimal-distributed.yaml) to instantiate a minimal (non-fault-tolerant) distributed Clearwater deployment under Docker.
+  - 104.155.15.20
 
 #### Preparation
 
@@ -77,8 +78,7 @@ If you scale up the clusters of storage nodes, you can monitor progress as new n
 
 ## Using Kubernetes
 
-Instead of using Docker Compose, you can deploy Clearwater in Kubernetes. This
-requires a Kubernetes cluster, and a Docker repository.
+Instead of using Docker Compose, you can deploy Clearwater in Kubernetes. This requires a Kubernetes cluster, and a Docker repository.
 
 ### Prepare the images and edit the yaml files
 
@@ -97,19 +97,26 @@ requires a Kubernetes cluster, and a Docker repository.
         done
 
 - Update the Kubernetes yaml to match your deployment.   
+
   - In each file ending depl.yaml you will need to:
     - edit the image path to match the path to the repository that you pushed your images to
     - edit the value of the ZONE attribute to match the domain of your Kubernetes cluster -- by default it is "default.svc.cluster.local" which will work for a "default" Kubernetes cluster
+
   - Decide how you want to access Bono and Ellis from outside of the cluster.    
+
     - By default Ellis is exposed via a NodePort service.  It can be accessed via the IP address of any of your cluster nodes on port 30080.   If you wish to change this you can do so by modifying ellis-svc.yaml.
+
       Depending on your platform you may need to manually create a firewall rule to allow access to this port.  E.g. on GKE this can be done from the command line using gcloud if you have it installed.  e.g.
       - gcloud compute firewall-rules create ellis --allow tcp:30080
+
     - Bono is more challenging to expose due to the following requirements.
       - Each Bono pod must be configured with an externally routable IP address by which that specific pod can be uniquely accessed (configured in bono-depl.yaml as the PUBLIC_IP).  Bono will record-route itself in SIP messages using this IP and susbequent SIP messages to that IP address must be guaranteed to hit the same Bono instance.
       - Port 5060 in the Bono pod must be accessible via port 5060 on the external IP address.   It is not possible to e.g. NAT port 5060 in the pod to port 30060 on the external IP.   This is because Bono always record-route's itself in SIP messages as <PUBLIC_IP>:5060.
+
       In the default kubernetes configuration we expose Bono using a LoadBalancer service with a statically assigned external IP address.  This means that 
       - you can only have a single Bono instance (as subsequent SIP requests in a session must be guaranteed to be routed back to the same Bono instance so you cannot have the load balancer balance across multiple Bonos)
-      - you can only support SIP over UDP or TCP (not both simultaneously) as Bono cannot have separate external IP addresses for each of UDP and TCP, and a single Kubernetes LoadBalancer service can't support multiple protocols.
+      - the deplyment can only support SIP over UDP or SIP over TCP (not both simultaneously) as Bono cannot have separate external IP addresses for each of UDP and TCP, and a single Kubernetes LoadBalancer service can't support multiple protocols.  By default bono-svc.yaml is configured to expose SIP over TCP.
+
       To use the default configuration you must ensure that
       - your Kubernetes cluster is running on a platform that supports LoadBalancer services
       - there is a static external IP address available that the load balancer can use (e.g. on GKE you must explicitly provision this first)
@@ -117,7 +124,7 @@ requires a Kubernetes cluster, and a Docker repository.
 
 ### Deploy Clearwater in Kubernetes
 
-To deploy the images, you should simply do `kubectl create -f clearwater-docker/kubernetes`.
+To deploy the images, you should simply do `kubectl create -f clearwater-docker/kubernetes`.   It may take a minute or so before the deployment is fully established, the load balancer is created, and the deployment is ready to accept calls.
 
 ## Manual Turn-Up
 
