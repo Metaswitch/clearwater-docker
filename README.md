@@ -100,16 +100,20 @@ requires a Kubernetes cluster, and a Docker repository.
   - In each file ending depl.yaml you will need to:
     - edit the image path to match the path to the repository that you pushed your images to
     - edit the value of the ZONE attribute to match the domain of your Kubernetes cluster -- by default it is "default.svc.cluster.local" which will work for a "default" Kubernetes cluster
-  - Decide how you want to access Bono and Ellis from outside of the cluster.    By default the Bono and Ellis services are exposed as NodePorts.   They can be accessed via the IP address of any of your cluster nodes, using the following ports:
-    - Ellis: 30080
-    - Bono (UDP): 30060
-    - Bono (TCP): 31060, 31062
-    If you are running in a cloud provider you may alternatively choose to expose these services via a LoadBalancer.   To do this simply change the service "Type" to LoadBalancer in ellis-svc.depl and bono-svc.depl.
-     
-    Note if you are running in GKE and use the LoadBalancer option then firewall rules will be configured automatically.    If you choose to use the default NodePort option then you will need to add the firewall rules manually.   This can be done from the command line using gcloud if you have it installed.  e.g.
-    - gcloud compute firewall-rules create bono-udp --allow udp:30060
-    - gcloud compute firewall-rules create bono-tcp --allow tcp:30478,tcp:31060,tcp:31062
-    - gcloud compute firewall-rules create ellis --allow tcp:30080
+  - Decide how you want to access Bono and Ellis from outside of the cluster.    
+    - By default Ellis is exposed via a NodePort service.  It can be accessed via the IP address of any of your cluster nodes on port 30080.   If you wish to change this you can do so by modifying ellis-svc.yaml.
+      Depending on your platform you may need to manually create a firewall rule to allow access to this port.  E.g. on GKE this can be done from the command line using gcloud if you have it installed.  e.g.
+      - gcloud compute firewall-rules create ellis --allow tcp:30080
+    - Bono is more challenging to expose due to the following requirements.
+      - Each Bono pod must be configured with an externally routable IP address by which that specific pod can be uniquely accessed (configured in bono-depl.yaml as the PUBLIC_IP).  Bono will record-route itself in SIP messages using this IP and susbequent SIP messages to that IP address must be guaranteed to hit the same Bono instance.
+      - Port 5060 in the Bono pod must be accessible via port 5060 on the external IP address.   It is not possible to e.g. NAT port 5060 in the pod to port 30060 on the external IP.   This is because Bono always record-route's itself in SIP messages as <PUBLIC_IP>:5060.
+      In the default kubernetes configuration we expose Bono using a LoadBalancer service with a statically assigned external IP address.  This means that 
+      - you can only have a single Bono instance (as subsequent SIP requests in a session must be guaranteed to be routed back to the same Bono instance so you cannot have the load balancer balance across multiple Bonos)
+      - you can only support SIP over UDP or TCP (not both simultaneously) as Bono cannot have separate external IP addresses for each of UDP and TCP, and a single Kubernetes LoadBalancer service can't support multiple protocols.
+      To use the default configuration you must ensure that
+      - your Kubernetes cluster is running on a platform that supports LoadBalancer services
+      - there is a static external IP address available that the load balancer can use (e.g. on GKE you must explicitly provision this first)
+      - you must replace the value of loadBalancerIP in bono-svc.yaml and PUBLIC_IP in bono-depl.yaml with this external IP address.
 
 ### Deploy Clearwater in Kubernetes
 

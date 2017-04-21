@@ -26,6 +26,8 @@ spec:
         - containerPort: 5062
           protocol: "UDP"
         env:
+        - name: PUBLIC_IP
+          value: <BONO_PUBLIC_IP>
         - name: ZONE
           value: default.svc.cluster.local
         - name: MY_POD_IP
