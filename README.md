@@ -32,6 +32,8 @@ If deploying with compose or manually
 - edit clearwater-docker/.env so that PUBLIC_IP is set to an IP address that can be used by SIP clients to access the docker host.   E.g. if you are running in AWS, this wants to be the public IP of your AWS VM.   Note: this file is not used when deploying on Kubernetes.
 - if you want to be able to monitor your Docker deployment via a web UI then you might like to install and run [Weave Scope](https://www.weave.works/products/weave-scope/).  This only takes a minute to [install](https://www.weave.works/install-weave-scope/) and provides real time visualizations showing all of your containers, their resource usage and the connectivity between them.
 
+By default Docker images built using clearwater-docker will pull the latest stable versions of Clearwater packages from http://repo.cw-ngv.com/stable.   If you check out the latest stable branch of clearwater-docker e.g. release-XXX then this should be fine.  If you are using the master branch of clearwater-docker then it will sometimes be dependent upon the latest Clearwater packages.   To use these instead update base/Dockerfile to reference http://repo.cw-ngv.com/latest instead before building the base Docker image.
+
 ![alt text](docs/images/clearwater-docker in scope.jpg "Clearwater-Docker dispayed in Scope")
 
 ## Using Compose
