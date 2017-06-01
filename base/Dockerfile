@@ -20,13 +20,13 @@ RUN sed -e 's/\#\(precedence ::ffff:0:0\/96  100\)/\1/g' -i /etc/gai.conf
 RUN echo deb http://repo.cw-ngv.com/stable binary/ > /etc/apt/sources.list.d/clearwater.list
 
 RUN curl -L http://repo.cw-ngv.com/repo_key | apt-key add -
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --force-yes clearwater-infrastructure clearwater-auto-config-docker clearwater-management
+RUN apt-get update 
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y --force-yes clearwater-infrastructure clearwater-auto-config-docker clearwater-management clearwater-monit
+RUN apt-get install -y --force-yes clearwater-snmp-alarm-agent
 RUN apt-get install -y --force-yes clearwater-snmpd
 RUN /etc/init.d/clearwater-auto-config-docker restart
-RUN /etc/init.d/clearwater-infrastructure restart
-COPY clearwater-infrastructure.supervisord.conf /etc/supervisor/conf.d/clearwater-infrastructure.conf
-COPY clearwater-group.supervisord.conf /etc/supervisor/conf.d/clearwater-group.conf
-COPY snmpd.supervisord.conf /etc/supervisor/conf.d/snmpd.conf
+COPY monit.supervisord.conf /etc/supervisor/conf.d/monit.conf
+COPY alarm-agent.supervisord.conf /etc/supervisor/conf.d/alarm-agent.conf
 
 # Changes to make everything work with Kubernetes
 RUN apt-get install -y netcat-openbsd

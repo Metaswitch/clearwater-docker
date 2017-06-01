@@ -6,7 +6,4 @@ RUN sed -e 's/\(echo 0 > \/proc\/sys\/kernel\/yama\/ptrace_scope\)/# \0/g' -i /e
 RUN apt-get install -y --force-yes clearwater-snmp-handler-astaire
 #RUN echo "log_level=5" >> /etc/clearwater/user_settings
 
-COPY sprout.supervisord.conf /etc/supervisor/conf.d/sprout.conf
-COPY clearwater-group.supervisord.conf /etc/supervisor/conf.d/clearwater-group.conf
-
 EXPOSE 5052 5054
