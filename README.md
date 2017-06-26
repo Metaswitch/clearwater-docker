@@ -98,13 +98,13 @@ Instead of using Docker Compose, you can deploy Clearwater in Kubernetes. This r
             docker push path_to_your_repo/clearwater/$i:latest
         done
 
-- Update the Kubernetes yaml to match your deployment.   
+- Update the Kubernetes yaml to match your deployment.
 
   - In each file ending depl.yaml you will need to:
     - edit the image path to match the path to the repository that you pushed your images to
     - edit the value of the ZONE attribute to match the domain of your Kubernetes cluster -- by default it is "default.svc.cluster.local" which will work for a "default" Kubernetes cluster
 
-  - Decide how you want to access Bono and Ellis from outside of the cluster.    
+  - Decide how you want to access Bono and Ellis from outside of the cluster.
 
     - By default Ellis is exposed via a NodePort service.  It can be accessed via the IP address of any of your cluster nodes on port 30080.   If you wish to change this you can do so by modifying ellis-svc.yaml.
 
@@ -115,7 +115,7 @@ Instead of using Docker Compose, you can deploy Clearwater in Kubernetes. This r
       - Each Bono pod must be configured with an externally routable IP address by which that specific pod can be uniquely accessed (configured in bono-depl.yaml as the PUBLIC_IP).  Bono will record-route itself in SIP messages using this IP and susbequent SIP messages to that IP address must be guaranteed to hit the same Bono instance.
       - Port 5060 in the Bono pod must be accessible via port 5060 on the external IP address.   It is not possible to e.g. NAT port 5060 in the pod to port 30060 on the external IP.   This is because Bono always record-route's itself in SIP messages as <PUBLIC_IP>:5060.
 
-      In the default kubernetes configuration we expose Bono using a LoadBalancer service with a statically assigned external IP address.  This means that 
+      In the default kubernetes configuration we expose Bono using a LoadBalancer service with a statically assigned external IP address.  This means that
       - you can only have a single Bono instance (as subsequent SIP requests in a session must be guaranteed to be routed back to the same Bono instance so you cannot have the load balancer balance across multiple Bonos)
       - the deployment can only support SIP over UDP or SIP over TCP (not both simultaneously) as Bono cannot have separate external IP addresses for each of UDP and TCP, and a single Kubernetes LoadBalancer service can't support multiple protocols.  By default bono-svc.yaml is configured to expose SIP over TCP.
 
@@ -221,3 +221,4 @@ If you wish to destroy your deployment either to redeploy with a different confi
     # This command will report an error due to a conflict, this can be safely
     # ignored.
     sudo docker rmi $(sudo docker images -a | tail -n +2 | grep -v "14.04" | tr -s ' ' | cut -f3 -d' ')
+
