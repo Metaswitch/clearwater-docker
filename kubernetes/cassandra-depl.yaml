@@ -10,7 +10,7 @@ spec:
         service: cassandra
     spec:
       containers:
-      - image: "<MY_REPO>/clearwater/cassandra:latest"
+      - image: "{{REPO}}/clearwater/cassandra:latest"
         name: cassandra
         ports:
         - containerPort: 22

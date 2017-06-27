@@ -14,7 +14,7 @@ spec:
         snmp: enabled
     spec:
       containers:
-      - image: "<MY_REPO>/clearwater/bono:latest"
+      - image: "{{REPO}}/clearwater/bono:latest"
         name: bono
         ports:
         - containerPort: 22
@@ -27,7 +27,7 @@ spec:
           protocol: "UDP"
         env:
         - name: PUBLIC_IP
-          value: <BONO_PUBLIC_IP>
+          value: {{BONO_PUBLIC_IP}}
         - name: ZONE
           value: default.svc.cluster.local
         - name: MY_POD_IP

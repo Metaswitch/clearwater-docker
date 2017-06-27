@@ -10,7 +10,7 @@ spec:
         service: ellis
     spec:
       containers:
-      - image: "<MY_REPO>/clearwater/ellis:latest"
+      - image: "{{REPO}}/clearwater/ellis:latest"
         name: ellis
         ports:
         - containerPort: 22

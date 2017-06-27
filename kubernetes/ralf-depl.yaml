@@ -14,7 +14,7 @@ spec:
         snmp: enabled
     spec:
       containers:
-      - image: "<MY_REPO>/clearwater/ralf:latest"
+      - image: "{{REPO}}/clearwater/ralf:latest"
         name: ralf
         ports:
         - containerPort: 22

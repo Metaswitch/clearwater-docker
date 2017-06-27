@@ -14,7 +14,7 @@ spec:
         snmp: enabled
     spec:
       containers:
-      - image: "<MY_REPO>/clearwater/sprout:latest"
+      - image: "{{REPO}}/clearwater/sprout:latest"
         name: sprout
         ports:
         - containerPort: 22
