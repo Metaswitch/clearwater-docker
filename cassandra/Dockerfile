@@ -8,4 +8,9 @@ COPY start_cassandra.sh /usr/bin/start_cassandra.sh
 COPY cassandra.supervisord.conf /etc/supervisor/conf.d/cassandra.conf
 COPY clearwater-group.supervisord.conf /etc/supervisor/conf.d/clearwater-group.conf
 
+# None of the ulimit calls work in containers. Replace "ulimit" with "true" so
+# they do nothing rather than fail.
+RUN sed -e 's/ulimit/true/' -i /etc/init.d/cassandra
+
 EXPOSE 9160 7001 7001 9042
+USER metaswitch

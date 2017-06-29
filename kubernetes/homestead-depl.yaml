@@ -22,7 +22,7 @@ spec:
         - containerPort: 8889
         env:
         - name: ZONE
-          value: default.svc.cluster.local
+          value: {{ZONE}}
         - name: MY_POD_IP
           valueFrom:
             fieldRef:

@@ -10,3 +10,4 @@ COPY nginx.supervisord.conf /etc/supervisor/conf.d/nginx.conf
 COPY clearwater-group.supervisord.conf /etc/supervisor/conf.d/clearwater-group.conf
 
 EXPOSE 8888 8889
+USER metaswitch

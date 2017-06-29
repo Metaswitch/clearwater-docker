@@ -9,3 +9,4 @@ COPY astaire.supervisord.conf /etc/supervisor/conf.d/astaire.conf
 COPY clearwater-group.supervisord.conf /etc/supervisor/conf.d/clearwater-group.conf
 
 EXPOSE 11311
+USER metaswitch

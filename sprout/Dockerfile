@@ -10,3 +10,4 @@ COPY sprout.supervisord.conf /etc/supervisor/conf.d/sprout.conf
 COPY clearwater-group.supervisord.conf /etc/supervisor/conf.d/clearwater-group.conf
 
 EXPOSE 5052 5054
+USER metaswitch

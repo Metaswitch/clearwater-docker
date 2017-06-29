@@ -29,7 +29,7 @@ spec:
         - name: PUBLIC_IP
           value: {{BONO_PUBLIC_IP}}
         - name: ZONE
-          value: default.svc.cluster.local
+          value: {{ZONE}}
         - name: MY_POD_IP
           valueFrom:
             fieldRef:

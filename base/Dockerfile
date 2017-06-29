@@ -6,9 +6,8 @@ RUN apt-get install -y apt-transport-https unzip
 
 RUN mkdir -p /var/log/supervisor
 RUN echo 'root:root' | chpasswd
-EXPOSE 22
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf"]
+ENTRYPOINT ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf"]
 
 RUN locale-gen en_US.UTF-8
 ENV LANG en_US.UTF-8
@@ -33,3 +32,10 @@ RUN apt-get install -y netcat-openbsd
 RUN sed -i 's/SCTP_streams.*/No_SCTP;/' /usr/share/clearwater/bin/generic_create_diameterconf
 
 COPY liveness.sh /usr/share/kubernetes/
+
+# Set up user and group permissions. Note the "--no-log-init" flag, required to
+# fix a docker build bug.
+RUN useradd --no-log-init -u 1000070000 metaswitch -G root
+
+# This script checks to see if you are root. Shoot that puppy.
+RUN echo "echo Faked out root check" > /usr/share/clearwater/utils/check-root-permissions

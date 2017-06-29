@@ -8,3 +8,4 @@ COPY chronos.supervisord.conf /etc/supervisor/conf.d/chronos.conf
 COPY clearwater-group.supervisord.conf /etc/supervisor/conf.d/clearwater-group.conf
 
 EXPOSE 7253
+USER metaswitch

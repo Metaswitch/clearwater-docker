@@ -11,3 +11,4 @@ COPY plugins/* /usr/share/clearwater/clearwater-cluster-manager/plugins/
 COPY reload_memcached_users /usr/share/clearwater/bin/reload_memcached_users
 
 EXPOSE 10888
+USER metaswitch
