@@ -28,4 +28,16 @@ spec:
         readinessProbe:
           tcpSocket:
             port: 11311
+        volumeMounts:
+        - name: astairelogs
+          mountPath: /var/log/astaire
+      - image: busybox
+        name: tailer
+        command: [ "tail", "-F", "/var/log/astaire/astaire_current.txt" ]
+        volumeMounts:
+        - name: astairelogs
+          mountPath: /var/log/astaire
+      volumes:
+      - name: astairelogs
+        emptyDir: {}
       restartPolicy: Always

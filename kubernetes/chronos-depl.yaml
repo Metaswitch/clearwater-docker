@@ -29,4 +29,16 @@ spec:
         readinessProbe:
           tcpSocket:
             port: 7253
+        volumeMounts:
+        - name: chronoslogs
+          mountPath: /var/log/chronos
+      - image: busybox
+        name: tailer
+        command: [ "tail", "-F", "/var/log/chronos/chronos_current.txt" ]
+        volumeMounts:
+        - name: chronoslogs
+          mountPath: /var/log/chronos
+      volumes:
+      - name: chronoslogs
+        emptyDir: {}
       restartPolicy: Always

@@ -48,4 +48,16 @@ spec:
         readinessProbe:
           exec:
             command: ["/bin/bash", "/usr/share/kubernetes/liveness.sh", "3478 5060 5062"]
+        volumeMounts:
+        - name: bonologs
+          mountPath: /var/log/bono
+      - image: busybox
+        name: tailer
+        command: [ "tail", "-F", "/var/log/bono/bono_current.txt" ]
+        volumeMounts:
+        - name: bonologs
+          mountPath: /var/log/bono
+      volumes:
+      - name: bonologs
+        emptyDir: {}
       restartPolicy: Always
