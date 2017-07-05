@@ -35,9 +35,10 @@ COPY liveness.sh /usr/share/kubernetes/
 
 # Set up user and group permissions. Note the "--no-log-init" flag, required to
 # fix a docker build bug.
-#RUN useradd --no-log-init -u 1000070000 metaswitch -G root
 RUN groupadd -g 1000070000 metaswitch
 RUN useradd --no-log-init -u 1000070000 -g metaswitch metaswitch
+RUN mkdir /home/metaswitch
+RUN chown metaswitch:metaswitch /home/metaswitch
 
 # This script checks to see if you are root. Shoot that puppy.
 RUN echo "echo Faked out root check" > /usr/share/clearwater/utils/check-root-permissions

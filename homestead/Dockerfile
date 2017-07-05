@@ -9,6 +9,13 @@ COPY homestead-prov.supervisord.conf /etc/supervisor/conf.d/homestead-prov.conf
 COPY nginx.supervisord.conf /etc/supervisor/conf.d/nginx.conf
 COPY clearwater-group.supervisord.conf /etc/supervisor/conf.d/clearwater-group.conf
 
+# We are not root (homestead-prov does not assume root)
+RUN sed -e 's/ulimit/true/' -i /etc/init.d/homestead
+RUN sed -e 's/chown/true/' -i /etc/init.d/homestead
+RUN sed -e 's/install /true /' -i /etc/init.d/homestead
+RUN sed -e 's/--chuid $NAME//' -i /etc/init.d/homestead
+RUN mkdir /var/run/homestead
+
 RUN find /etc -type d -exec chmod 777 {} \;
 RUN find /opt -type d -exec chmod 777 {} \;
 RUN find /usr -type d -exec chmod 777 {} \;
