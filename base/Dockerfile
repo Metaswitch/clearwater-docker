@@ -41,3 +41,18 @@ RUN useradd --no-log-init -u 1000070000 -g metaswitch metaswitch
 
 # This script checks to see if you are root. Shoot that puppy.
 RUN echo "echo Faked out root check" > /usr/share/clearwater/utils/check-root-permissions
+
+# Do not try and run scripts that change /etc/hosts or /etc/hostname
+RUN rm /usr/share/clearwater/infrastructure/scripts/1hosts
+RUN rm /usr/share/clearwater/infrastructure/scripts/hostname
+
+# Patch up /etc/init.d/clearwater-etcd, replacing ulimit, chown and install
+# with "true"
+RUN sed -e 's/ulimit/true/' -i /etc/init.d/clearwater-etcd
+RUN sed -e 's/chown/true/' -i /etc/init.d/clearwater-etcd
+RUN sed -e 's/install/true/' -i /etc/init.d/clearwater-etcd
+RUN sed -e 's/--chuid $USER//' -i /etc/init.d/clearwater-etcd
+
+# This directory needs to be created because the "install" command above got
+# nuked.
+RUN mkdir /var/run/clearwater-etcd
