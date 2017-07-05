@@ -11,6 +11,8 @@ COPY clearwater-group.supervisord.conf /etc/supervisor/conf.d/clearwater-group.c
 # None of the ulimit calls work in containers. Replace "ulimit" with "true" so
 # they do nothing rather than fail.
 RUN sed -e 's/ulimit/true/' -i /etc/init.d/cassandra
+# Also do not attempt to run start-stop-daemon as root
+RUN sed -e 's/-c root//' -i /etc/init.d/cassandra
 
 RUN find /etc -type d -exec chmod 777 {} \;
 RUN find /opt -type d -exec chmod 777 {} \;
