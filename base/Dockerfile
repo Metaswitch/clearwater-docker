@@ -57,3 +57,10 @@ RUN sed -e 's/--chuid $USER//' -i /etc/init.d/clearwater-etcd
 # This directory needs to be created because the "install" command above got
 # nuked.
 RUN mkdir /var/run/clearwater-etcd
+
+RUN sed -i -e '/echo "icscf/a \\n    echo hss_realm=metaswitch.svc.cluster.local >> $shared_config\n    echo hss_domain=hss.metaswitch.svc.cluster.local >> $shared_config\n    echo force_hss_peer=$HSS_IP >> $shared_config' /etc/init.d/clearwater-auto-config-docker
+RUN sed -i -e '/echo "servers/a \\n      sed -i "s/bind-address = 0.0.0.0/bind-address = $ip/" /etc/chronos/chronos.conf' /etc/init.d/clearwater-auto-config-docker
+
+# sudo fails in OpenShift so dummy it out
+COPY sudo /usr/bin/sudo
+RUN chmod a+x /usr/bin/sudo
