@@ -58,7 +58,9 @@ RUN sed -e 's/--chuid $USER//' -i /etc/init.d/clearwater-etcd
 # nuked.
 RUN mkdir /var/run/clearwater-etcd
 
-RUN sed -i -e '/echo "icscf/a \\n    echo hss_realm=metaswitch.svc.cluster.local >> $shared_config\n    echo hss_domain=hss.metaswitch.svc.cluster.local >> $shared_config\n    echo force_hss_peer=$HSS_IP >> $shared_config' /etc/init.d/clearwater-auto-config-docker
+# Add any other settings that have been defined in ADDITIONAL_SHARED_CONFIG
+RUN sed -i -e 's/\/bin\/sh/\/bin\/bash/g' /etc/init.d/clearwater-auto-config-docker
+RUN sed -i -e '/echo "icscf/a \\n    echo -e $ADDITIONAL_SHARED_CONFIG >> $shared_config' /etc/init.d/clearwater-auto-config-docker
 RUN sed -i -e '/echo "servers/a \\n      sed -i "s/bind-address = 0.0.0.0/bind-address = $ip/" /etc/chronos/chronos.conf' /etc/init.d/clearwater-auto-config-docker
 
 # sudo fails in OpenShift so dummy it out
