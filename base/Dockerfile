@@ -63,6 +63,9 @@ RUN sed -i -e 's/\/bin\/sh/\/bin\/bash/g' /etc/init.d/clearwater-auto-config-doc
 RUN sed -i -e '/echo "icscf/a \\n    echo -e $ADDITIONAL_SHARED_CONFIG >> $shared_config' /etc/init.d/clearwater-auto-config-docker
 RUN sed -i -e '/echo "servers/a \\n      sed -i "s/bind-address = 0.0.0.0/bind-address = $ip/" /etc/chronos/chronos.conf' /etc/init.d/clearwater-auto-config-docker
 
+# This file is not enabled, but is placed ready to be copied across if required
+COPY socket-factory.supervisord.conf /etc/clearwater/socket-factory.supervisord.conf
+
 # sudo fails in OpenShift so dummy it out
 COPY sudo /usr/bin/sudo
 RUN chmod a+x /usr/bin/sudo

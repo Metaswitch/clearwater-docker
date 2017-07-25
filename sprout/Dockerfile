@@ -9,6 +9,9 @@ RUN apt-get install -y --force-yes clearwater-snmp-handler-astaire
 COPY sprout.supervisord.conf /etc/supervisor/conf.d/sprout.conf
 COPY clearwater-group.supervisord.conf /etc/supervisor/conf.d/clearwater-group.conf
 
+# Set up the socket factory to run so SAS works (upstart is not in use here).
+RUN cp /etc/clearwater/socket-factory.supervisord.conf /etc/supervisor/conf.d/
+
 # We are not root.
 RUN sed -e 's/ulimit/true/' -i /etc/init.d/sprout
 RUN sed -e 's/chown/true/' -i /etc/init.d/sprout
