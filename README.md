@@ -1,3 +1,4 @@
+
 # Clearwater Docker
 
 This repository contains [Dockerfiles](https://docs.docker.com/reference/builder/) for use with [Docker](https://www.docker.com/) and [Compose](https://docs.docker.com/compose/) to deploy [Project Clearwater](http://www.projectclearwater.org).
@@ -101,8 +102,8 @@ Instead of using Docker Compose, you can deploy Clearwater in Kubernetes. This r
 - Update the Kubernetes yaml to match your deployment.   
 
   - In each file ending depl.yaml you will need to:
-    - edit the image path to match the path to the repository that you pushed your images to
-    - edit the value of the ZONE attribute to match the domain of your Kubernetes cluster -- by default it is "default.svc.cluster.local" which will work for a "default" Kubernetes cluster
+    - replace {{REPO}} with the path to the repository that you pushed your images to
+    - replace {{ZONE}} with the domain of your Kubernetes cluster -- e.g. `default.svc.cluster.local`
 
   - Decide how you want to access Bono and Ellis from outside of the cluster.    
 

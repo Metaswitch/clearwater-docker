@@ -3,14 +3,16 @@ kind: Deployment
 metadata:
   name: cassandra
 spec:
-  replicas: 2
+  replicas: 3
   template:
     metadata:
       labels:
         service: cassandra
     spec:
+      securityContext:
+        runAsUser: 1000070000
       containers:
-      - image: "<MY_REPO>/clearwater/cassandra:latest"
+      - image: "{{REPO}}/clearwater/cassandra:latest"
         name: cassandra
         ports:
         - containerPort: 22
@@ -23,7 +25,7 @@ spec:
             fieldRef:
               fieldPath: status.podIP
         - name: ZONE
-          value: default.svc.cluster.local
+          value: {{ZONE}}
         livenessProbe:
           exec:
             command: ["/bin/bash", "/usr/share/kubernetes/liveness.sh", "7000 9042 9160"]

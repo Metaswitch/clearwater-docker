@@ -43,6 +43,12 @@ services:
       - 22
   homestead:
     build: homestead
+    environment:
+      - ADDITIONAL_SHARED_CONFIG
+    ports:
+      - 22
+  homestead-prov:
+    build: homestead-prov
     ports:
       - 22
   homer:

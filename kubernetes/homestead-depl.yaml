@@ -14,24 +14,35 @@ spec:
         snmp: enabled
     spec:
       containers:
-      - image: "<MY_REPO>/clearwater/homestead:latest"
+      - image: "{{REPO}}/clearwater/homestead:latest"
         name: homestead
         ports:
         - containerPort: 22
         - containerPort: 8888
-        - containerPort: 8889
         env:
         - name: ZONE
-          value: default.svc.cluster.local
+          value: {{ZONE}}
         - name: MY_POD_IP
           valueFrom:
             fieldRef:
               fieldPath: status.podIP
         livenessProbe:
           exec:
-            command: ["/bin/bash", "/usr/share/kubernetes/liveness.sh", "8888 8889"]
+            command: ["/bin/bash", "/usr/share/kubernetes/liveness.sh", "8888"]
           initialDelaySeconds: 60
         readinessProbe:
           exec:
-            command: ["/bin/bash", "/usr/share/kubernetes/liveness.sh", "8888 8889"]
+            command: ["/bin/bash", "/usr/share/kubernetes/liveness.sh", "8888"]
+        volumeMounts:
+        - name: homesteadlogs
+          mountPath: /var/log/homestead
+      - image: busybox
+        name: tailer
+        command: [ "tail", "-F", "/var/log/homestead/homestead_current.txt" ]
+        volumeMounts:
+        - name: homesteadlogs
+          mountPath: /var/log/homestead
+      volumes:
+      - name: homesteadlogs
+        emptyDir: {}
       restartPolicy: Always

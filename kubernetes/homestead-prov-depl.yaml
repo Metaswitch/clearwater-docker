@@ -1,0 +1,36 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: homestead-prov
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      service: homestead-prov
+  template:
+    metadata:
+      labels:
+        service: homestead-prov
+        snmp: enabled
+    spec:
+      containers:
+      - image: "{{REPO}}/clearwater/homestead-prov:latest"
+        name: homestead-prov
+        ports:
+        - containerPort: 22
+        - containerPort: 8889
+        env:
+        - name: ZONE
+          value: {{ZONE}}
+        - name: MY_POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        livenessProbe:
+          exec:
+            command: ["/bin/bash", "/usr/share/kubernetes/liveness.sh", "8889"]
+          initialDelaySeconds: 60
+        readinessProbe:
+          exec:
+            command: ["/bin/bash", "/usr/share/kubernetes/liveness.sh", "8889"]
+      restartPolicy: Always

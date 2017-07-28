@@ -14,13 +14,13 @@ spec:
         snmp: enabled
     spec:
       containers:
-      - image: "<MY_REPO>/clearwater/sprout:latest"
+      - image: "{{REPO}}/clearwater/sprout:latest"
         name: sprout
         ports:
         - containerPort: 22
         env:
         - name: ZONE
-          value: default.svc.cluster.local
+          value: {{ZONE}}
         - name: MY_POD_IP
           valueFrom:
             fieldRef:
@@ -33,4 +33,16 @@ spec:
         readinessProbe:
           exec:
             command: ["/bin/bash", "/usr/share/kubernetes/liveness.sh", "5052 5054"]
+        volumeMounts:
+        - name: sproutlogs
+          mountPath: /var/log/sprout
+      - image: busybox
+        name: tailer
+        command: [ "tail", "-F", "/var/log/sprout/sprout_current.txt" ]
+        volumeMounts:
+        - name: sproutlogs
+          mountPath: /var/log/sprout
+      volumes:
+      - name: sproutlogs
+        emptyDir: {}
       restartPolicy: Always
