@@ -16,6 +16,9 @@ spec:
         - containerPort: 22
         - containerPort: 11211
         - containerPort: 11311
+        envFrom:
+        - configMapRef:
+              name: env-vars
         env:
         - name: MY_POD_IP
           valueFrom:

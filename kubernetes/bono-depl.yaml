@@ -25,11 +25,12 @@ spec:
           protocol: "UDP"
         - containerPort: 5062
           protocol: "UDP"
+        envFrom:
+        - configMapRef:
+              name: env-vars
         env:
         - name: PUBLIC_IP
           value: {{BONO_PUBLIC_IP}}
-        - name: ZONE
-          value: {{ZONE}}
         - name: MY_POD_IP
           valueFrom:
             fieldRef:

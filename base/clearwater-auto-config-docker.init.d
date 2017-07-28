@@ -144,7 +144,7 @@ do_auto_config()
 
     if [ -n "$nameserver" ]
     then
-      echo "\n[dns]" >> /etc/chronos/chronos.conf
+      echo -e "\n[dns]" >> /etc/chronos/chronos.conf
       echo "servers=$nameserver" >> /etc/chronos/chronos.conf
     fi
 

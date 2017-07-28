@@ -18,9 +18,10 @@ spec:
         name: sprout
         ports:
         - containerPort: 22
+        envFrom:
+        - configMapRef:
+              name: env-vars
         env:
-        - name: ZONE
-          value: {{ZONE}}
         - name: MY_POD_IP
           valueFrom:
             fieldRef:

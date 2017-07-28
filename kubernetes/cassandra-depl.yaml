@@ -9,8 +9,6 @@ spec:
       labels:
         service: cassandra
     spec:
-      securityContext:
-        runAsUser: 1000070000
       containers:
       - image: "{{REPO}}/clearwater/cassandra:latest"
         name: cassandra
@@ -19,13 +17,14 @@ spec:
         - containerPort: 7001
         - containerPort: 9042
         - containerPort: 9160
+        envFrom:
+        - configMapRef:
+              name: env-vars
         env:
         - name: MY_POD_IP
           valueFrom:
             fieldRef:
               fieldPath: status.podIP
-        - name: ZONE
-          value: {{ZONE}}
         livenessProbe:
           exec:
             command: ["/bin/bash", "/usr/share/kubernetes/liveness.sh", "7000 9042 9160"]

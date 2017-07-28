@@ -15,6 +15,9 @@ spec:
         ports:
         - containerPort: 22
         - containerPort: 7888
+        envFrom:
+        - configMapRef:
+              name: env-vars
         env:
         - name: ZONE
           value: default.svc.cluster.local

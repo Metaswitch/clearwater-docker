@@ -4,7 +4,7 @@ metadata:
   name: bono
 spec:
   type: "LoadBalancer"  
-  loadBalancerIP: <BONO_PUBLIC_IP>
+  loadBalancerIP: {{BONO_PUBLIC_IP}}
   ports:
   - name: "3478"
     port: 3478

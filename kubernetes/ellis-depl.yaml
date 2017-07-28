@@ -15,9 +15,10 @@ spec:
         ports:
         - containerPort: 22
         - containerPort: 80
+        envFrom:
+        - configMapRef:
+              name: env-vars
         env:
-        - name: ZONE
-          value: default.svc.cluster.local
         - name: MY_POD_IP
           valueFrom:
             fieldRef:
