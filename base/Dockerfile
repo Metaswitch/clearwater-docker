@@ -17,12 +17,11 @@ ENV LC_ALL en_US.UTF-8
 COPY sysctl /sbin/sysctl
 RUN sed -e 's/\#\(precedence ::ffff:0:0\/96  100\)/\1/g' -i /etc/gai.conf
 
-RUN echo deb http://repo.cw-ngv.com/latest binary/ > /etc/apt/sources.list.d/clearwater.list
+RUN echo deb http://repo.cw-ngv.com/stable binary/ > /etc/apt/sources.list.d/clearwater.list
 
 RUN curl -L http://repo.cw-ngv.com/repo_key | apt-key add -
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --force-yes clearwater-infrastructure clearwater-auto-config-docker clearwater-management
 RUN apt-get install -y --force-yes clearwater-snmpd
-COPY clearwater-auto-config-docker.init.d /etc/init.d/clearwater-auto-config-docker
 RUN /etc/init.d/clearwater-auto-config-docker restart
 RUN /etc/init.d/clearwater-infrastructure restart
 COPY clearwater-infrastructure.supervisord.conf /etc/supervisor/conf.d/clearwater-infrastructure.conf

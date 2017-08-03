@@ -101,7 +101,7 @@ Instead of using Docker Compose, you can deploy Clearwater in Kubernetes. This r
 
 - Create an `env-vars` config map.   
   - At a minimum this must include a ZONE key set to the domain of your Kubernetes cluster e.g. `default.svc.cluster.local`
-  - It may also include an ADDITIONAL_SHARED_CONFIG key whose value includes additional shared config settings that you want to use.   E.g. this can be used to specify an HSS domain to use.  Multiple setting should be separate with `\\n`
+  - It may also include an ADDITIONAL_SHARED_CONFIG key whose value includes additional shared config settings that you want to use.   E.g. this can be used to specify an HSS domain to use.  Multiple settings should be separated with `\\n`
   
   e.g. `kubectl create configmap env-vars --from-literal=ZONE=default.svc.cluster.local --from-literal=ADDITIONAL_SHARED_CONFIG=hss_domain=example.com\\nother_setting=something_else`
 
