@@ -12,11 +12,14 @@ spec:
         service: chronos
     spec:
       containers:
-      - image: "<MY_REPO>/clearwater/chronos:latest"
+      - image: "{{REPO}}/clearwater/chronos:latest"
         name: chronos
         ports:
         - containerPort: 22
         - containerPort: 7253
+        envFrom:
+        - configMapRef:
+              name: env-vars
         env:
         - name: MY_POD_IP
           valueFrom:
@@ -29,4 +32,16 @@ spec:
         readinessProbe:
           tcpSocket:
             port: 7253
+        volumeMounts:
+        - name: chronoslogs
+          mountPath: /var/log/chronos
+      - image: busybox
+        name: tailer
+        command: [ "tail", "-F", "/var/log/chronos/chronos_current.txt" ]
+        volumeMounts:
+        - name: chronoslogs
+          mountPath: /var/log/chronos
+      volumes:
+      - name: chronoslogs
+        emptyDir: {}
       restartPolicy: Always

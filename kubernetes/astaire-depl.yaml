@@ -10,12 +10,15 @@ spec:
         service: astaire
     spec:
       containers:
-      - image: "<MY_REPO>/clearwater/astaire:latest"
+      - image: "{{REPO}}/clearwater/astaire:latest"
         name: astaire
         ports:
         - containerPort: 22
         - containerPort: 11211
         - containerPort: 11311
+        envFrom:
+        - configMapRef:
+              name: env-vars
         env:
         - name: MY_POD_IP
           valueFrom:
@@ -28,4 +31,16 @@ spec:
         readinessProbe:
           tcpSocket:
             port: 11311
+        volumeMounts:
+        - name: astairelogs
+          mountPath: /var/log/astaire
+      - image: busybox
+        name: tailer
+        command: [ "tail", "-F", "/var/log/astaire/astaire_current.txt" ]
+        volumeMounts:
+        - name: astairelogs
+          mountPath: /var/log/astaire
+      volumes:
+      - name: astairelogs
+        emptyDir: {}
       restartPolicy: Always

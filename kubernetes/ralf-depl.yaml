@@ -14,14 +14,15 @@ spec:
         snmp: enabled
     spec:
       containers:
-      - image: "<MY_REPO>/clearwater/ralf:latest"
+      - image: "{{REPO}}/clearwater/ralf:latest"
         name: ralf
         ports:
         - containerPort: 22
         - containerPort: 10888
+        envFrom:
+        - configMapRef:
+              name: env-vars
         env:
-        - name: ZONE
-          value: default.svc.cluster.local
         - name: MY_POD_IP
           valueFrom:
             fieldRef:
@@ -33,4 +34,16 @@ spec:
         readinessProbe:
           tcpSocket:
             port: 10888
+        volumeMounts:
+        - name: ralflogs
+          mountPath: /var/log/ralf
+      - image: busybox
+        name: tailer
+        command: [ "tail", "-F", "/var/log/ralf/ralf_current.txt" ]
+        volumeMounts:
+        - name: ralflogs
+          mountPath: /var/log/ralf
+      volumes:
+      - name: ralflogs
+        emptyDir: {}
       restartPolicy: Always

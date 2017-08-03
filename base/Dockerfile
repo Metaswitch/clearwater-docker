@@ -8,7 +8,7 @@ RUN mkdir -p /var/log/supervisor
 RUN echo 'root:root' | chpasswd
 EXPOSE 22
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf"]
+ENTRYPOINT ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf"]
 
 RUN locale-gen en_US.UTF-8
 ENV LANG en_US.UTF-8
@@ -33,3 +33,8 @@ RUN apt-get install -y netcat-openbsd
 RUN sed -i 's/SCTP_streams.*/No_SCTP;/' /usr/share/clearwater/bin/generic_create_diameterconf
 
 COPY liveness.sh /usr/share/kubernetes/
+
+# Some containers have socket factories that need to be started.  Supervisord config is common to all containers that need it
+# so copy the relevant supervisord config into the base container and we'll move it to /etc/supervisor/conf.d so that it actually gets 
+# invoked in the containers that need it.
+COPY socket-factory.supervisord.conf /etc/clearwater/socket-factory.supervisord.conf

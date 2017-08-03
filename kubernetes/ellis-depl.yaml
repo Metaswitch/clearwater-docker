@@ -10,14 +10,15 @@ spec:
         service: ellis
     spec:
       containers:
-      - image: "<MY_REPO>/clearwater/ellis:latest"
+      - image: "{{REPO}}/clearwater/ellis:latest"
         name: ellis
         ports:
         - containerPort: 22
         - containerPort: 80
+        envFrom:
+        - configMapRef:
+              name: env-vars
         env:
-        - name: ZONE
-          value: default.svc.cluster.local
         - name: MY_POD_IP
           valueFrom:
             fieldRef:

@@ -1,3 +1,4 @@
+
 # Clearwater Docker
 
 This repository contains [Dockerfiles](https://docs.docker.com/reference/builder/) for use with [Docker](https://www.docker.com/) and [Compose](https://docs.docker.com/compose/) to deploy [Project Clearwater](http://www.projectclearwater.org).
@@ -88,21 +89,25 @@ Instead of using Docker Compose, you can deploy Clearwater in Kubernetes. This r
 
         # Build the Clearwater docker images.
         cd clearwater-docker
-        for i in base astaire cassandra chronos bono ellis homer homestead ralf sprout ; do docker build -t clearwater/$i $i ; done
+        for i in base astaire cassandra chronos bono ellis homer homestead homestead-prov ralf sprout ; do docker build -t clearwater/$i $i ; done
 
 - Next, push them to your repository (which must be accessible from the Kubernetes deployment)
 
-        for i in base astaire cassandra chronos bono ellis homer homestead ralf sprout
+        for i in base astaire cassandra chronos bono ellis homer homestead homestead-prov ralf sprout
         do
             docker tag clearwater/$i:latest path_to_your_repo/clearwater/$i:latest
             docker push path_to_your_repo/clearwater/$i:latest
         done
 
+- Create an `env-vars` config map.   
+  - At a minimum this must include a ZONE key set to the domain of your Kubernetes cluster e.g. `default.svc.cluster.local`
+  - It may also include an ADDITIONAL_SHARED_CONFIG key whose value includes additional shared config settings that you want to use.   E.g. this can be used to specify an HSS domain to use.  Multiple settings should be separated with `\\n`
+  
+  e.g. `kubectl create configmap env-vars --from-literal=ZONE=default.svc.cluster.local --from-literal=ADDITIONAL_SHARED_CONFIG=hss_domain=example.com\\nother_setting=something_else`
+
 - Update the Kubernetes yaml to match your deployment.   
 
-  - In each file ending depl.yaml you will need to:
-    - edit the image path to match the path to the repository that you pushed your images to
-    - edit the value of the ZONE attribute to match the domain of your Kubernetes cluster -- by default it is "default.svc.cluster.local" which will work for a "default" Kubernetes cluster
+  - In each file ending depl.yaml you will need to replace {{REPO}} with the path to the repository that you pushed your images to
 
   - Decide how you want to access Bono and Ellis from outside of the cluster.    
 
@@ -122,11 +127,13 @@ Instead of using Docker Compose, you can deploy Clearwater in Kubernetes. This r
       To use the default configuration you must ensure that
       - your Kubernetes cluster is running on a platform that supports LoadBalancer services
       - there is a static external IP address available that the load balancer can use (e.g. on GKE you must explicitly provision this first)
-      - you must replace the value of `loadBalancerIP` in bono-svc.yaml and `PUBLIC_IP` in bono-depl.yaml with this external IP address.
+      - you must replace `{{BONO_PUBLIC_IP}}` in bono-svc.yaml and bono-depl.yaml with this external IP address.
 
 ### Deploy Clearwater in Kubernetes
 
 To deploy the images, you should simply do `kubectl create -f clearwater-docker/kubernetes`.   It may take a minute or so before the deployment is fully established, the load balancer is created, and the deployment is ready to accept calls.
+
+Note this will deploy all containers.   If you don't need e.g. Bono, Homestead-prov, Ellis etc. then just move the corresponding svc and depl files out of the directory before running the create command.
 
 ## Manual Turn-Up
 
@@ -138,7 +145,7 @@ To prepare your system to deploy Clearwater without using Compose, after running
 
     # Build the Clearwater docker images.
     cd clearwater-docker
-    for i in base astaire cassandra chronos bono ellis homer homestead ralf sprout ; do sudo docker build -t clearwater/$i $i ; done
+    for i in base astaire cassandra chronos bono ellis homer homestead homestead-prov ralf sprout ; do sudo docker build -t clearwater/$i $i ; done
 
 #### Starting Clearwater
 
@@ -150,6 +157,7 @@ To start the Clearwater services, run:
     sudo docker run -d --net=clearwater_nw --name cassandra -p 22 --sysctl net.ipv6.conf.lo.disable_ipv6=0 clearwater/cassandra
     sudo docker run -d --net=clearwater_nw --name chronos -p 22 clearwater/chronos
     sudo docker run -d --net=clearwater_nw --name homestead -p 22 clearwater/homestead
+    sudo docker run -d --net=clearwater_nw --name homestead-prov -p 22 clearwater/homestead-prov
     sudo docker run -d --net=clearwater_nw --name homer -p 22 clearwater/homer
     sudo docker run -d --net=clearwater_nw --name ralf -p 22 clearwater/ralf
     sudo docker run -d --net=clearwater_nw --network-alias=icscf.sprout --network-alias=scscf.sprout --name sprout -p 22 clearwater/sprout

@@ -10,14 +10,15 @@ spec:
         service: homer
     spec:
       containers:
-      - image: "<MY_REPO>/clearwater/homer:latest"
+      - image: "{{REPO}}/clearwater/homer:latest"
         name: homer
         ports:
         - containerPort: 22
         - containerPort: 7888
+        envFrom:
+        - configMapRef:
+              name: env-vars
         env:
-        - name: ZONE
-          value: default.svc.cluster.local
         - name: MY_POD_IP
           valueFrom:
             fieldRef:
