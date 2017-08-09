@@ -29,9 +29,9 @@ spec:
               fieldPath: status.podIP
         livenessProbe:
           exec:
-            command: ["/bin/bash", "/usr/share/kubernetes/liveness.sh", "8889"]
+            command: ["/bin/bash", "/usr/share/clearwater/bin/poll_homestead-prov.sh"]
           initialDelaySeconds: 60
         readinessProbe:
           exec:
-            command: ["/bin/bash", "/usr/share/kubernetes/liveness.sh", "8889"]
+            command: ["/bin/bash", "/usr/share/clearwater/bin/poll_homestead-prov.sh"]
       restartPolicy: Always
