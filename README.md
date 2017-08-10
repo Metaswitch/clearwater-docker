@@ -135,6 +135,13 @@ To deploy the images, you should simply do `kubectl create -f clearwater-docker/
 
 Note this will deploy all containers.   If you don't need e.g. Bono, Homestead-prov, Ellis etc. then just move the corresponding svc and depl files out of the directory before running the create command.
 
+If you have deployed using the standard configuration in e.g. GKE (and so Ellis is exposed as a NodePort and Bono is exposed using a load balancer with an external IP address) then you can run the [clearwater-live-tests](https://github.com/Metaswitch/clearwater-live-test/) against the deployment using e.g. 
+
+```
+rake test[default.svc.cluster.local] PROXY={{Bono external IP addresss}} ELLIS={{external IP address of one of your nodes}}:30080 SIGNUP_CODE=secret
+```
+
+
 ## Manual Turn-Up
 
 If you can't or don't want to use Compose, you can turn the deployment up manually under Docker.
