@@ -15,6 +15,7 @@ spec:
     spec:
       containers:
       - image: "{{REPO}}/clearwater/bono:latest"
+        imagePullPolicy: Always
         name: bono
         ports:
         - containerPort: 22

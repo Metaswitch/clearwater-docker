@@ -15,6 +15,7 @@ spec:
     spec:
       containers:
       - image: "{{REPO}}/clearwater/homestead:latest"
+        imagePullPolicy: Always
         name: homestead
         ports:
         - containerPort: 22

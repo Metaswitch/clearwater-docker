@@ -15,6 +15,7 @@ spec:
     spec:
       containers:
       - image: "{{REPO}}/clearwater/sprout:latest"
+        imagePullPolicy: Always
         name: sprout
         ports:
         - containerPort: 22

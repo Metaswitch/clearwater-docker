@@ -11,6 +11,7 @@ spec:
     spec:
       containers:
       - image: "{{REPO}}/clearwater/cassandra:latest"
+        imagePullPolicy: Always
         name: cassandra
         ports:
         - containerPort: 22
