@@ -11,6 +11,7 @@ spec:
     spec:
       containers:
       - image: "{{REPO}}/clearwater/homer:latest"
+        imagePullPolicy: Always
         name: homer
         ports:
         - containerPort: 22

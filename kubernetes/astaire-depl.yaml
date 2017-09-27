@@ -11,6 +11,7 @@ spec:
     spec:
       containers:
       - image: "{{REPO}}/clearwater/astaire:latest"
+        imagePullPolicy: Always
         name: astaire
         ports:
         - containerPort: 22
