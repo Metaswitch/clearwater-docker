@@ -111,36 +111,45 @@ Instead of using Docker Compose, you can deploy Clearwater in Kubernetes. This r
 
   - Decide how you want to access Bono and Ellis from outside of the cluster.    
 
-    - By default Ellis is exposed via a NodePort service.  It can be accessed via the IP address of any of your cluster nodes on port 30080.   If you wish to change this you can do so by modifying ellis-svc.yaml.
+    - By default, all components are exposed as headless services, including Bono and Ellis; we assume that you have direct connectivity to your pod IP addresses, and have set up DNS such that the internal kubernetes DNS records are also accessible. If this is not the case, you can modify the Bono and Ellis service yaml configuration files to expose them as NodePort services, or through the use of a load balancer. The section below gives some suggestions on how this can be set up, but specific configuration will depend on the platform in use.
 
-      Depending on your platform you may need to manually create a firewall rule to allow access to this port.  E.g. on GKE this can be done from the command line using gcloud if you have it installed.  e.g.
-      - gcloud compute firewall-rules create ellis --allow tcp:30080
+#### Alternative configuration for exposing Bono and Ellis services
 
-    - Bono is more challenging to expose due to the following requirements.
-      - Each Bono pod must be configured with an externally routable IP address by which that specific pod can be uniquely accessed (configured in bono-depl.yaml as the PUBLIC_IP).  Bono will record-route itself in SIP messages using this IP and susbequent SIP messages to that IP address must be guaranteed to hit the same Bono instance.
-      - Port 5060 in the Bono pod must be accessible via port 5060 on the external IP address.   It is not possible to e.g. NAT port 5060 in the pod to port 30060 on the external IP.   This is because Bono always record-route's itself in SIP messages as <PUBLIC_IP>:5060.
+  - In cases where you cannot configure direct connectivity to your pod addresses, you need to specifically expose the Bono and Ellis services. Ellis is relatively simple, but Bono is more challenging to expose due to the following requirements:
+    - Each Bono pod must be configured with an externally routable IP address by which that specific pod can be uniquely accessed. Bono will record-route itself in SIP messages using this IP and susbequent SIP messages to that IP address must be guaranteed to hit the same Bono instance.
+    - Port 5060 in the Bono pod must be accessible via port 5060 on the external IP address.   It is not possible to e.g. NAT port 5060 in the pod to port 30060 on the external IP.   This is because Bono always record-route's itself in SIP messages as <PUBLIC_IP>:5060.
 
-      In the default kubernetes configuration we expose Bono using a LoadBalancer service with a statically assigned external IP address.  This means that 
-      - you can only have a single Bono instance (as subsequent SIP requests in a session must be guaranteed to be routed back to the same Bono instance so you cannot have the load balancer balance across multiple Bonos)
-      - the deployment can only support SIP over UDP or SIP over TCP (not both simultaneously) as Bono cannot have separate external IP addresses for each of UDP and TCP, and a single Kubernetes LoadBalancer service can't support multiple protocols.  By default bono-svc.yaml is configured to expose SIP over TCP.
+  - To expose Bono, you can use a LoadBalancer (assuming platform support), with a statically assigned external IP address. This brings in the following limitations:
+    - you can only have a single Bono instance (as subsequent SIP requests in a session must be guaranteed to be routed back to the same Bono instance so you cannot have the load balancer balance across multiple Bonos)
+    - the deployment can only support SIP over UDP or SIP over TCP (not both simultaneously) as Bono cannot have separate external IP addresses for each of UDP and TCP, and a single Kubernetes LoadBalancer service can't support multiple protocols.  By default bono-svc.yaml is configured to expose SIP over TCP.
 
-      To use the default configuration you must ensure that
-      - your Kubernetes cluster is running on a platform that supports LoadBalancer services
-      - there is a static external IP address available that the load balancer can use (e.g. on GKE you must explicitly provision this first)
-      - you must replace `{{BONO_PUBLIC_IP}}` in bono-svc.yaml and bono-depl.yaml with this external IP address.
+    To configure this, you must:
+    - Have a static external IP address available that the load balancer can use (e.g. on GKE you must explicitly provision this first)
+    - Replace `clusterIP: None` in bono-svc.yaml with `type: "LoadBalancer"`, and add a line following this of `loadBalancerIP: <static IP>`
+    - Add the lines `name: PUBLIC_IP` and `value: <static IP>` to the `env:` section of the bono-depl.yaml file
+
+  - To expose Ellis, you can simply set it up as a NodePort service:
+    - Replace `clusterIP: None` in ellis-svc.yaml with `type: NodePort`, and add a line to the "http" port configuration specifying `nodePort: <port number>`
+    - Depending on your platform you may need to manually create a firewall rule to allow access to this port.  E.g. on GKE this can be done from the command line using gcloud if you have it installed.  e.g.
+        `gcloud compute firewall-rules create ellis --allow tcp:30080`
 
 ### Deploy Clearwater in Kubernetes
 
-To deploy the images, you should simply do `kubectl create -f clearwater-docker/kubernetes`.   It may take a minute or so before the deployment is fully established, the load balancer is created, and the deployment is ready to accept calls.
+To deploy the images, you should simply run `kubectl apply -f clearwater-docker/kubernetes`.   It may take a minute or so before the deployment is fully established, the load balancer is created, and the deployment is ready to accept calls.
 
 Note this will deploy all containers.   If you don't need e.g. Bono, Homestead-prov, Ellis etc. then just move the corresponding svc and depl files out of the directory before running the create command.
 
-If you have deployed using the standard configuration in e.g. GKE (and so Ellis is exposed as a NodePort and Bono is exposed using a load balancer with an external IP address) then you can run the [clearwater-live-tests](https://github.com/Metaswitch/clearwater-live-test/) against the deployment using e.g. 
+If you have deployed using the standard configuration then you can run the [clearwater-live-tests](https://github.com/Metaswitch/clearwater-live-test/) against the deployment using e.g.
+
+```
+rake test[default.svc.cluster.local] PROXY="bono.default.svc.cluster.local" SIGNUP_CODE=secret
+```
+
+If you have had to expose Bono and Ellis in a non-standard manner, you may need to change the `PROXY` argument, and add an `ELLIS` argument, so that the test scripts are able to access these services. e.g.
 
 ```
 rake test[default.svc.cluster.local] PROXY={{Bono external IP addresss}} ELLIS={{external IP address of one of your nodes}}:30080 SIGNUP_CODE=secret
 ```
-
 
 ## Manual Turn-Up
 
