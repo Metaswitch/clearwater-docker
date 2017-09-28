@@ -30,12 +30,12 @@ To prepare your system to deploy Clearwater on Docker, run:
     git clone --recursive https://github.com/Metaswitch/clearwater-docker.git
 
 If deploying with compose or manually
-- edit clearwater-docker/.env so that PUBLIC_IP is set to an IP address that can be used by SIP clients to access the docker host.   E.g. if you are running in AWS, this wants to be the public IP of your AWS VM.   Note: this file is not used when deploying on Kubernetes.
+- edit clearwater-docker/.env so that PUBLIC_IP is set to an IP address that can be used by SIP clients to access the docker host.  E.g. if you are running in AWS, this wants to be the public IP of your AWS VM.  Note: this file is not used when deploying on Kubernetes.
 - if you want to be able to monitor your Docker deployment via a web UI then you might like to install and run [Weave Scope](https://www.weave.works/products/weave-scope/).  This only takes a minute to [install](https://www.weave.works/install-weave-scope/) and provides real time visualizations showing all of your containers, their resource usage and the connectivity between them.
 
-By default Docker images built using clearwater-docker will pull the latest stable versions of Clearwater packages from http://repo.cw-ngv.com/stable.   If you check out the latest stable branch of clearwater-docker e.g. release-XXX then this should be fine.  If you are using the master branch of clearwater-docker then it will sometimes be dependent upon the latest Clearwater packages.   To use these instead update base/Dockerfile to reference http://repo.cw-ngv.com/latest instead before building the base Docker image.
+By default Docker images built using clearwater-docker will pull the latest stable versions of Clearwater packages from http://repo.cw-ngv.com/stable.  If you check out the latest stable branch of clearwater-docker e.g. release-XXX then this should be fine.  If you are using the master branch of clearwater-docker then it will sometimes be dependent upon the latest Clearwater packages.  To use these instead update base/Dockerfile to reference http://repo.cw-ngv.com/latest instead before building the base Docker image.
 
-![alt text](docs/images/clearwater-docker in scope.jpg "Clearwater-Docker dispayed in Scope")
+![alt text](docs/images/clearwater-docker_in_scope.jpg "Clearwater-Docker dispayed in Scope")
 
 ## Using Compose
 
@@ -63,7 +63,7 @@ To start the Clearwater services, run:
 
 #### Scaling the deployment
 
-Having started up a deployment, it is then possible to scale it by adding more Sprout, Astaire, Chronos or Cassandra nodes.   E.g. to spin up an additional node of each of these types, run:
+Having started up a deployment, it is then possible to scale it by adding more Sprout, Astaire, Chronos or Cassandra nodes.  E.g. to spin up an additional node of each of these types, run:
 
     sudo docker-compose -f minimal-distributed.yaml scale sprout=2 astaire=2 chronos=2 cassandra=2
 
@@ -99,48 +99,64 @@ Instead of using Docker Compose, you can deploy Clearwater in Kubernetes. This r
             docker push path_to_your_repo/clearwater/$i:latest
         done
 
-- Create an `env-vars` config map.   
+- Create an `env-vars` config map.
   - At a minimum this must include a ZONE key set to the domain of your Kubernetes cluster e.g. `default.svc.cluster.local`
-  - It may also include an ADDITIONAL_SHARED_CONFIG key whose value includes additional shared config settings that you want to use.   E.g. this can be used to specify an HSS domain to use.  Multiple settings should be separated with `\\n`
-  
+  - It may also include an ADDITIONAL_SHARED_CONFIG key whose value includes additional shared config settings that you want to use.  E.g. this can be used to specify an HSS domain to use.  Multiple settings should be separated with `\\n`
+
   e.g. `kubectl create configmap env-vars --from-literal=ZONE=default.svc.cluster.local --from-literal=ADDITIONAL_SHARED_CONFIG=hss_domain=example.com\\nother_setting=something_else`
 
-- Update the Kubernetes yaml to match your deployment.   
+- Update the Kubernetes yaml to match your deployment.
 
   - In each file ending depl.yaml you will need to replace {{REPO}} with the path to the repository that you pushed your images to
 
-  - Decide how you want to access Bono and Ellis from outside of the cluster.    
+  - Decide how you want to access Bono and Ellis from outside of the cluster.
 
-    - By default Ellis is exposed via a NodePort service.  It can be accessed via the IP address of any of your cluster nodes on port 30080.   If you wish to change this you can do so by modifying ellis-svc.yaml.
+    The default configuration assumes that you have configured your network such that your SIP endpoints (and whatever devices you will access Ellis from) can
+    - connect directly to the IP addresses that Kubernetes assigns to your pods
+    - resolve interal kubernetes DNS records (typically as a result of an external DNS server delegating requests for the appropriate domain to the Kubernetes DNS service)
 
-      Depending on your platform you may need to manually create a firewall rule to allow access to this port.  E.g. on GKE this can be done from the command line using gcloud if you have it installed.  e.g.
-      - gcloud compute firewall-rules create ellis --allow tcp:30080
+    If this is the case then you do not need to make any changes here.  SIP devices can register with bono.<ZONE>:5060 and the Ellis provisioning interface can be accessed at http://ellis.<ZONE>.  If these requirements are not met then you will need to arrange alternative means to access Bono and Ellis -- see below for an example of how this can be done on e.g. GKE.
 
-    - Bono is more challenging to expose due to the following requirements.
-      - Each Bono pod must be configured with an externally routable IP address by which that specific pod can be uniquely accessed (configured in bono-depl.yaml as the PUBLIC_IP).  Bono will record-route itself in SIP messages using this IP and susbequent SIP messages to that IP address must be guaranteed to hit the same Bono instance.
-      - Port 5060 in the Bono pod must be accessible via port 5060 on the external IP address.   It is not possible to e.g. NAT port 5060 in the pod to port 30060 on the external IP.   This is because Bono always record-route's itself in SIP messages as <PUBLIC_IP>:5060.
+#### Alternative configuration for exposing Bono and Ellis services
 
-      In the default kubernetes configuration we expose Bono using a LoadBalancer service with a statically assigned external IP address.  This means that 
-      - you can only have a single Bono instance (as subsequent SIP requests in a session must be guaranteed to be routed back to the same Bono instance so you cannot have the load balancer balance across multiple Bonos)
-      - the deployment can only support SIP over UDP or SIP over TCP (not both simultaneously) as Bono cannot have separate external IP addresses for each of UDP and TCP, and a single Kubernetes LoadBalancer service can't support multiple protocols.  By default bono-svc.yaml is configured to expose SIP over TCP.
+If the above requirements are not met (external devices cannot resolve Kubernetes DNS entries and/or cannot directly access pod IP addresses) then an alternative mechanism must be used to access Ellis and Bono.
 
-      To use the default configuration you must ensure that
-      - your Kubernetes cluster is running on a platform that supports LoadBalancer services
-      - there is a static external IP address available that the load balancer can use (e.g. on GKE you must explicitly provision this first)
-      - you must replace `{{BONO_PUBLIC_IP}}` in bono-svc.yaml and bono-depl.yaml with this external IP address.
+  - To expose Ellis, you can simply set it up as a NodePort service:
+    - Replace `clusterIP: None` in ellis-svc.yaml with `type: NodePort`, and add a line to the "http" port configuration specifying `nodePort: <port number>`
+    - Depending on your platform you may need to manually create a firewall rule to allow access to this port.  E.g. on GKE this can be done from the command line using gcloud if you have it installed.  e.g.
+        `gcloud compute firewall-rules create ellis --allow tcp:30080`
+    - The Ellis provisioning interface can then be accessed on http:<IP address of any Kubernetes node>:30080
+
+  - Bono is more challenging to expose due to the following requirements:
+    - Each Bono pod must be configured with an externally routable IP address by which that specific pod can be uniquely accessed. Bono will record-route itself in SIP messages using this IP and susbequent SIP messages to that IP address must be guaranteed to hit the same Bono instance.
+    - Port 5060 in the Bono pod must be accessible via port 5060 on the external IP address.  It is not possible to e.g. NAT port 5060 in the pod to port 30060 on the external IP.  This is because Bono always record-route's itself in SIP messages as <PUBLIC_IP>:5060.
+
+    On e.g. GKE the easiest solution is to use a LoadBalancer with a statically assigned external IP address. This brings in the following limitations:
+    - you can only have a single Bono instance (as subsequent SIP requests in a session must be guaranteed to be routed back to the same Bono instance so you cannot have the load balancer balance across multiple Bonos)
+    - the deployment can only support SIP over UDP or SIP over TCP (not both simultaneously) as Bono cannot have separate external IP addresses for each of UDP and TCP, and a single Kubernetes LoadBalancer service can't support multiple protocols.  By default bono-svc.yaml is configured to expose SIP over TCP.
+
+    To configure this, you must:
+    - Have a static external IP address available that the load balancer can use (e.g. on GKE you must explicitly provision this first)
+    - Replace `clusterIP: None` in bono-svc.yaml with `type: "LoadBalancer"`, and add a line following this of `loadBalancerIP: <static IP>`
+    - Add the lines `name: PUBLIC_IP` and `value: <static IP>` to the `env:` section of the bono-depl.yaml file
 
 ### Deploy Clearwater in Kubernetes
 
-To deploy the images, you should simply do `kubectl create -f clearwater-docker/kubernetes`.   It may take a minute or so before the deployment is fully established, the load balancer is created, and the deployment is ready to accept calls.
+To deploy the images, you should simply run `kubectl apply -f clearwater-docker/kubernetes`.  It may take a minute or so before the deployment is fully established, the load balancer is created, and the deployment is ready to accept calls.
 
-Note this will deploy all containers.   If you don't need e.g. Bono, Homestead-prov, Ellis etc. then just move the corresponding svc and depl files out of the directory before running the create command.
+Note this will deploy all containers.  If you don't need e.g. Bono, Homestead-prov, Ellis etc. then just move the corresponding svc and depl files out of the directory before running the create command.
 
-If you have deployed using the standard configuration in e.g. GKE (and so Ellis is exposed as a NodePort and Bono is exposed using a load balancer with an external IP address) then you can run the [clearwater-live-tests](https://github.com/Metaswitch/clearwater-live-test/) against the deployment using e.g. 
+If you have deployed using the standard configuration then you can run the [clearwater-live-tests](https://github.com/Metaswitch/clearwater-live-test/) against the deployment using e.g.
+
+```
+rake test[default.svc.cluster.local] PROXY="bono.default.svc.cluster.local" SIGNUP_CODE=secret
+```
+
+If you have had to expose Bono and Ellis in a non-standard manner, you may need to change the `PROXY` argument, and add an `ELLIS` argument, so that the test scripts are able to access these services. e.g.
 
 ```
 rake test[default.svc.cluster.local] PROXY={{Bono external IP addresss}} ELLIS={{external IP address of one of your nodes}}:30080 SIGNUP_CODE=secret
 ```
-
 
 ## Manual Turn-Up
 
@@ -175,7 +191,7 @@ The Clearwater Docker images use DNS for service discovery - they require, for e
 
 #### Scaling the deployment
 
-It is possible to spin up additional Sprout, Cassandra, Astaire and Chronos nodes simply by repeating the relevant command `docker run` command but providing a different name.   E.g.
+It is possible to spin up additional Sprout, Cassandra, Astaire and Chronos nodes simply by repeating the relevant command `docker run` command but providing a different name.  E.g.
 
     sudo docker run -d --net=clearwater_nw --name astaire_2 -p 22 clearwater/astaire
 
@@ -190,7 +206,7 @@ The deployment exposes
 -   SIP on port 5060 for service
 -   SIP/WebSocket on port 5062 for service.
 
-Additionally, each node exposes SSH - use `sudo docker ps` to see what port its exposed on.  The username/password is root/root.   Alternatively you can run a bash session in a container by name using e.g. `sudo docker exec -it <container_name> bash`
+Additionally, each node exposes SSH - use `sudo docker ps` to see what port its exposed on.  The username/password is root/root.  Alternatively you can run a bash session in a container by name using e.g. `sudo docker exec -it <container_name> bash`
 
 ## What Next?
 

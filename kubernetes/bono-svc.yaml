@@ -3,8 +3,7 @@ kind: Service
 metadata:
   name: bono
 spec:
-  type: "LoadBalancer"  
-  loadBalancerIP: {{BONO_PUBLIC_IP}}
+  clusterIP: None
   ports:
   - name: "3478"
     port: 3478

@@ -3,11 +3,9 @@ kind: Service
 metadata:
   name: ellis
 spec:
-  #type: LoadBalancer
-  type: NodePort
+  clusterIP: None
   ports:
   - name: "http"
     port: 80
-    nodePort: 30080
   selector:
     service: ellis

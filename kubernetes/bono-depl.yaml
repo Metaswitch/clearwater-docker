@@ -30,8 +30,6 @@ spec:
         - configMapRef:
               name: env-vars
         env:
-        - name: PUBLIC_IP
-          value: {{BONO_PUBLIC_IP}}
         - name: MY_POD_IP
           valueFrom:
             fieldRef:
