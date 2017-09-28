@@ -99,17 +99,17 @@ Instead of using Docker Compose, you can deploy Clearwater in Kubernetes. This r
             docker push path_to_your_repo/clearwater/$i:latest
         done
 
-- Create an `env-vars` config map.  
+- Create an `env-vars` config map.
   - At a minimum this must include a ZONE key set to the domain of your Kubernetes cluster e.g. `default.svc.cluster.local`
   - It may also include an ADDITIONAL_SHARED_CONFIG key whose value includes additional shared config settings that you want to use.  E.g. this can be used to specify an HSS domain to use.  Multiple settings should be separated with `\\n`
-  
+
   e.g. `kubectl create configmap env-vars --from-literal=ZONE=default.svc.cluster.local --from-literal=ADDITIONAL_SHARED_CONFIG=hss_domain=example.com\\nother_setting=something_else`
 
-- Update the Kubernetes yaml to match your deployment.  
+- Update the Kubernetes yaml to match your deployment.
 
   - In each file ending depl.yaml you will need to replace {{REPO}} with the path to the repository that you pushed your images to
 
-  - Decide how you want to access Bono and Ellis from outside of the cluster.   
+  - Decide how you want to access Bono and Ellis from outside of the cluster.
 
     The default configuration assumes that you have configured your network such that your SIP endpoints (and whatever devices you will access Ellis from) can
     - connect directly to the IP addresses that Kubernetes assigns to your pods
@@ -126,7 +126,7 @@ If the above requirements are not met (external devices cannot resolve Kubernete
     - Depending on your platform you may need to manually create a firewall rule to allow access to this port.  E.g. on GKE this can be done from the command line using gcloud if you have it installed.  e.g.
         `gcloud compute firewall-rules create ellis --allow tcp:30080`
     - The Ellis provisioning interface can then be accessed on http:<IP address of any Kubernetes node>:30080
-  
+
   - Bono is more challenging to expose due to the following requirements:
     - Each Bono pod must be configured with an externally routable IP address by which that specific pod can be uniquely accessed. Bono will record-route itself in SIP messages using this IP and susbequent SIP messages to that IP address must be guaranteed to hit the same Bono instance.
     - Port 5060 in the Bono pod must be accessible via port 5060 on the external IP address.  It is not possible to e.g. NAT port 5060 in the pod to port 30060 on the external IP.  This is because Bono always record-route's itself in SIP messages as <PUBLIC_IP>:5060.
