@@ -35,7 +35,7 @@ If deploying with compose or manually
 
 By default Docker images built using clearwater-docker will pull the latest stable versions of Clearwater packages from http://repo.cw-ngv.com/stable.   If you check out the latest stable branch of clearwater-docker e.g. release-XXX then this should be fine.  If you are using the master branch of clearwater-docker then it will sometimes be dependent upon the latest Clearwater packages.   To use these instead update base/Dockerfile to reference http://repo.cw-ngv.com/latest instead before building the base Docker image.
 
-![alt text](docs/images/clearwater-docker in scope.jpg "Clearwater-Docker dispayed in Scope")
+![alt text](docs/images/clearwater-docker_in_scope.jpg "Clearwater-Docker dispayed in Scope")
 
 ## Using Compose
 
