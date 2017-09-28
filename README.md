@@ -131,7 +131,7 @@ If the above requirements are not met (external devices cannot resolve Kubernete
     - Each Bono pod must be configured with an externally routable IP address by which that specific pod can be uniquely accessed. Bono will record-route itself in SIP messages using this IP and susbequent SIP messages to that IP address must be guaranteed to hit the same Bono instance.
     - Port 5060 in the Bono pod must be accessible via port 5060 on the external IP address.  It is not possible to e.g. NAT port 5060 in the pod to port 30060 on the external IP.  This is because Bono always record-route's itself in SIP messages as <PUBLIC_IP>:5060.
 
-  - On e.g. GKE the easiest solution is to use a LoadBalancer with a statically assigned external IP address. This brings in the following limitations:
+    On e.g. GKE the easiest solution is to use a LoadBalancer with a statically assigned external IP address. This brings in the following limitations:
     - you can only have a single Bono instance (as subsequent SIP requests in a session must be guaranteed to be routed back to the same Bono instance so you cannot have the load balancer balance across multiple Bonos)
     - the deployment can only support SIP over UDP or SIP over TCP (not both simultaneously) as Bono cannot have separate external IP addresses for each of UDP and TCP, and a single Kubernetes LoadBalancer service can't support multiple protocols.  By default bono-svc.yaml is configured to expose SIP over TCP.
 
