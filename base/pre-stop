@@ -1,0 +1,4 @@
+#!/bin/bash
+supervisorctl stop all
+/etc/init.d/clearwater-etcd decommission
+

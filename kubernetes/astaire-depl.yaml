@@ -9,6 +9,7 @@ spec:
       labels:
         service: astaire
     spec:
+      terminationGracePeriodSeconds: 120
       containers:
       - image: "{{REPO}}/clearwater/astaire:latest"
         imagePullPolicy: Always
@@ -28,13 +29,17 @@ spec:
         livenessProbe:
           tcpSocket:
             port: 11311
-          initialDelaySeconds: 30
+          initialDelaySeconds: 90
         readinessProbe:
           tcpSocket:
             port: 11311
         volumeMounts:
         - name: astairelogs
           mountPath: /var/log/astaire
+        lifecycle:
+          preStop:
+            exec:
+              command: ["/bin/bash", "-c", "/usr/bin/pre-stop"]
       - image: busybox
         name: tailer
         command: [ "tail", "-F", "/var/log/astaire/astaire_current.txt" ]
