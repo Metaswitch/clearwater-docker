@@ -37,6 +37,14 @@ By default Docker images built using clearwater-docker will pull the latest stab
 
 ![alt text](docs/images/clearwater-docker_in_scope.jpg "Clearwater-Docker dispayed in Scope")
 
+## Limitations
+
+Note that scaling of Docker deployments is a work in progress and there are currently a number of known issues...
+
+* Homestead-prov and Ellis don’t load balance across multiple Cassandra nodes.
+
+* In general deleting pods from storage clusters (Cassandra, Chronos or Astaire) is not supported.  Pods that are deleted will not get removed from the clusters and the clusters will end up broken.  The exception is when deployed under Kubernetes -- in this scenario Chronos and Astaire pods can be terminated, so long as this is done gracefully such that their prestop event hook is executed.  This means that Astaire and Chronos clusters (under Kubernetes) can be dynamcially scaled up and down.
+
 ## Using Compose
 
 There is a [Compose file](minimal-distributed.yaml) to instantiate a minimal (non-fault-tolerant) distributed Clearwater deployment under Docker.
@@ -63,21 +71,13 @@ To start the Clearwater services, run:
 
 #### Scaling the deployment
 
-Having started up a deployment, it is then possible to scale it by adding more Sprout, Astaire, Chronos or Cassandra nodes.  E.g. to spin up an additional node of each of these types, run:
+Having started up a deployment, it is then possible to scale it by adding or removing additional nodes.  E.g. run
 
     sudo docker-compose -f minimal-distributed.yaml scale sprout=2 astaire=2 chronos=2 cassandra=2
 
-Note that scaling of Docker deployments is a work in progress and there are currently a number of known issues...
+Note that it is not possible to scale *down* storage node clusters -- see limitations above.
 
-* Bono doesn’t automatically start using new Sprout nodes unless the Bono process is restarted, e.g.
-
-    `sudo docker exec clearwaterdocker_bono_1 sudo service bono restart`
-
-* Homestead-prov and Ellis don’t load balance across multiple Cassandra nodes.
-
-* There is no tested or documented process for scaling down clusters of storage nodes in Docker -- it isn't sufficient to just delete the containers as they need to be explicitly decommissioned and removed from the clusters.
-
-If you scale up the clusters of storage nodes, you can monitor progress as new nodes join the clusters by running `utils/show_cluster_state.sh`.
+If you scale *up* the clusters of storage nodes, you can monitor progress as new nodes join the clusters by running `utils/show_cluster_state.sh`.
 
 ## Using Kubernetes
 
@@ -160,17 +160,13 @@ If you have had to expose Bono and Ellis in a non-standard manner, you may need 
 rake test[default.svc.cluster.local] PROXY={{Bono external IP addresss}} ELLIS={{external IP address of one of your nodes}}:30080 SIGNUP_CODE=secret
 ```
 
+### Scaling the deployment
+
 All of the stateless Clearwater services: i.e. everything except Cassandra, Chronos and Astaire can be dynamically scaled up and down by running e.g. 
 `kubectl scale deployment sprout --replicas=3`
 (The other exception is Bono depending on how it is exposed external to your deployment -- see above).
 
-Astaire and Chronos clusters can also be scaled up and down (although see limitation below).
-
-### Limitations
-
-Clearwater stateful service clusters (Chronos, Astaire and Cassandra).
-- The Cassandra cluster is left in a bad state if a Cassandra pod is destroyed.  The cluster continues to think that the destroyed pod is part of the cluster.
-- Chronos and Astaire clusters are left in a bad state if pods are destroyed without the prestop handler being allowed to execute successfully.
+Astaire and Chronos clusters can also be scaled up and down (although see general limitations above).   The Cassandra cluster can be scaled up but not down (see general limitations above).
 
 ## Manual Turn-Up
 
