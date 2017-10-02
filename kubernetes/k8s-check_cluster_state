@@ -1,0 +1,2 @@
+#!/bin/bash
+kubectl exec -it $(kubectl get pods | grep -E "astaire|cassandra|chronos" | grep Running | awk '{print $1;}' | head -n1) cw-check_cluster_state
