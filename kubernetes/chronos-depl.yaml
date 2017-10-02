@@ -11,6 +11,7 @@ spec:
       labels:
         service: chronos
     spec:
+      terminationGracePeriodSeconds: 120
       containers:
       - image: "{{REPO}}/clearwater/chronos:latest"
         imagePullPolicy: Always
@@ -29,13 +30,17 @@ spec:
         livenessProbe:
           tcpSocket:
             port: 7253
-          initialDelaySeconds: 30
+          initialDelaySeconds: 90
         readinessProbe:
           tcpSocket:
             port: 7253
         volumeMounts:
         - name: chronoslogs
           mountPath: /var/log/chronos
+        lifecycle:
+          preStop:
+            exec:
+              command: ["/bin/bash", "-c", "/usr/bin/pre-stop"]
       - image: busybox
         name: tailer
         command: [ "tail", "-F", "/var/log/chronos/chronos_current.txt" ]
