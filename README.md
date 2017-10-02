@@ -160,6 +160,18 @@ If you have had to expose Bono and Ellis in a non-standard manner, you may need 
 rake test[default.svc.cluster.local] PROXY={{Bono external IP addresss}} ELLIS={{external IP address of one of your nodes}}:30080 SIGNUP_CODE=secret
 ```
 
+All of the stateless Clearwater services: i.e. everything except Cassandra, Chronos and Astaire can be dynamically scaled up and down by running e.g. 
+`kubectl scale deployment sprout --replicas=3`
+(The other exception is Bono depending on how it is exposed external to your deployment -- see above).
+
+Astaire and Chronos clusters can also be scaled up and down (although see limitation below).
+
+### Limitations
+
+Clearwater stateful service clusters (Chronos, Astaire and Cassandra).
+- The Cassandra cluster is left in a bad state if a Cassandra pod is destroyed.  The cluster continues to think that the destroyed pod is part of the cluster.
+- Chronos and Astaire clusters are left in a bad state if pods are destroyed without the prestop handler being allowed to execute successfully.
+
 ## Manual Turn-Up
 
 If you can't or don't want to use Compose, you can turn the deployment up manually under Docker.
