@@ -1,10 +1,13 @@
 #!/bin/bash
-[ -z "$IMAGE_PREFIX" ] && { echo "Need to set IMAGE_PREFIX"; exit 1; }
+[ -z "$IMAGE_PATH" ] && { echo "Need to set IMAGE_PATH"; exit 1; }
 [ -z "$IMAGE_TAG" ] && { echo "Need to set IMAGE_TAG"; exit 1; }
 [ -z "$1" ] && { echo "Need to specify path to K8s tmpl files"; exit 1; }
-FILES=$1/*
-for f in $FILES
+
+TMPL_PATH=$1/templates/*
+
+for f in $TMPL_PATH
 do
-  filename="${f%.*}" 
-  sed 's@{{REPO:\([^}]*\)}}@'$IMAGE_PREFIX'\/\1\:'$IMAGE_TAG'@g' $filename.tmpl > $filename.yaml
+  filename=${f##*/}
+  containername="${filename%.*}" 
+  sed 's@{{REPO:\([^}]*\)}}@'$IMAGE_PATH'\/\1\:'$IMAGE_TAG'@g' $1/templates/$containername.tmpl > $1/$containername.yaml
 done

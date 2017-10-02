@@ -108,7 +108,8 @@ Instead of using Docker Compose, you can deploy Clearwater in Kubernetes. This r
 
 - Update the Kubernetes yaml to match your deployment.
 
-  - In each file ending depl.yaml you will need to replace {{REPO}} with the path to the repository that you pushed your images to
+  - Generate the K8s yaml files from the templates by running `IMAGE_PATH=<path to your repo> IMAGE_TAG=<tag for the images you want to use> k8s-subst kubernetes`
+    The script assumes that the Clearwater images that you want to use are located at IMAGE_PATH/<image name e.g. bono>:<IMAGE_TAG>
 
   - Decide how you want to access Bono and Ellis from outside of the cluster.
 
