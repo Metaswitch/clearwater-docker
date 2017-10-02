@@ -1,25 +1,25 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: homestead
+  name: ralf
 spec:
   replicas: 1
   selector:
     matchLabels:
-      service: homestead
+      service: ralf
   template:
     metadata:
       labels:
-        service: homestead
+        service: ralf
         snmp: enabled
     spec:
       containers:
-      - image: "{{REPO}}/clearwater/homestead:latest"
+      - image: "{{REPO:ralf}}"
         imagePullPolicy: Always
-        name: homestead
+        name: ralf
         ports:
         - containerPort: 22
-        - containerPort: 8888
+        - containerPort: 10888
         envFrom:
         - configMapRef:
               name: env-vars
@@ -29,22 +29,22 @@ spec:
             fieldRef:
               fieldPath: status.podIP
         livenessProbe:
-          exec:
-            command: ["/bin/bash", "/usr/share/kubernetes/liveness.sh", "8888"]
-          initialDelaySeconds: 60
+          tcpSocket:
+            port: 10888
+          initialDelaySeconds: 30
         readinessProbe:
-          exec:
-            command: ["/bin/bash", "/usr/share/kubernetes/liveness.sh", "8888"]
+          tcpSocket:
+            port: 10888
         volumeMounts:
-        - name: homesteadlogs
-          mountPath: /var/log/homestead
+        - name: ralflogs
+          mountPath: /var/log/ralf
       - image: busybox
         name: tailer
-        command: [ "tail", "-F", "/var/log/homestead/homestead_current.txt" ]
+        command: [ "tail", "-F", "/var/log/ralf/ralf_current.txt" ]
         volumeMounts:
-        - name: homesteadlogs
-          mountPath: /var/log/homestead
+        - name: ralflogs
+          mountPath: /var/log/ralf
       volumes:
-      - name: homesteadlogs
+      - name: ralflogs
         emptyDir: {}
       restartPolicy: Always

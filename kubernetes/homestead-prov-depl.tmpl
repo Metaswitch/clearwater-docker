@@ -1,21 +1,25 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: ellis
+  name: homestead-prov
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      service: homestead-prov
   template:
     metadata:
       labels:
-        service: ellis
+        service: homestead-prov
+        snmp: enabled
     spec:
       containers:
-      - image: "{{REPO}}/clearwater/ellis:latest"
+      - image: "{{REPO:homestead-prov}}"
         imagePullPolicy: Always
-        name: ellis
+        name: homestead-prov
         ports:
         - containerPort: 22
-        - containerPort: 80
+        - containerPort: 8889
         envFrom:
         - configMapRef:
               name: env-vars
@@ -25,10 +29,10 @@ spec:
             fieldRef:
               fieldPath: status.podIP
         livenessProbe:
-          tcpSocket:
-            port: 80
-          initialDelaySeconds: 30
+          exec:
+            command: ["/bin/bash", "/usr/share/clearwater/bin/poll_homestead-prov.sh"]
+          initialDelaySeconds: 60
         readinessProbe:
-          tcpSocket:
-            port: 80
+          exec:
+            command: ["/bin/bash", "/usr/share/clearwater/bin/poll_homestead-prov.sh"]
       restartPolicy: Always

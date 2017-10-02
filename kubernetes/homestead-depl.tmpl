@@ -1,24 +1,25 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: sprout
+  name: homestead
 spec:
   replicas: 1
   selector:
     matchLabels:
-      service: sprout
+      service: homestead
   template:
     metadata:
       labels:
-        service: sprout
+        service: homestead
         snmp: enabled
     spec:
       containers:
-      - image: "{{REPO}}/clearwater/sprout:latest"
+      - image: "{{REPO:homestead}}"
         imagePullPolicy: Always
-        name: sprout
+        name: homestead
         ports:
         - containerPort: 22
+        - containerPort: 8888
         envFrom:
         - configMapRef:
               name: env-vars
@@ -29,22 +30,21 @@ spec:
               fieldPath: status.podIP
         livenessProbe:
           exec:
-            command: ["/bin/bash", "/usr/share/kubernetes/liveness.sh", "5052 5054"]
-          initialDelaySeconds: 30
-          periodSeconds: 3
+            command: ["/bin/bash", "/usr/share/kubernetes/liveness.sh", "8888"]
+          initialDelaySeconds: 60
         readinessProbe:
           exec:
-            command: ["/bin/bash", "/usr/share/kubernetes/liveness.sh", "5052 5054"]
+            command: ["/bin/bash", "/usr/share/kubernetes/liveness.sh", "8888"]
         volumeMounts:
-        - name: sproutlogs
-          mountPath: /var/log/sprout
+        - name: homesteadlogs
+          mountPath: /var/log/homestead
       - image: busybox
         name: tailer
-        command: [ "tail", "-F", "/var/log/sprout/sprout_current.txt" ]
+        command: [ "tail", "-F", "/var/log/homestead/homestead_current.txt" ]
         volumeMounts:
-        - name: sproutlogs
-          mountPath: /var/log/sprout
+        - name: homesteadlogs
+          mountPath: /var/log/homestead
       volumes:
-      - name: sproutlogs
+      - name: homesteadlogs
         emptyDir: {}
       restartPolicy: Always

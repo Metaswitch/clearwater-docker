@@ -11,7 +11,7 @@ spec:
     spec:
       terminationGracePeriodSeconds: 120
       containers:
-      - image: "{{REPO}}/clearwater/astaire:latest"
+      - image: "{{REPO:astaire}}"
         imagePullPolicy: Always
         name: astaire
         ports:

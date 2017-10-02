@@ -14,7 +14,7 @@ spec:
         snmp: enabled
     spec:
       containers:
-      - image: "{{REPO}}/clearwater/bono:latest"
+      - image: "{{REPO:bono}}"
         imagePullPolicy: Always
         name: bono
         ports:

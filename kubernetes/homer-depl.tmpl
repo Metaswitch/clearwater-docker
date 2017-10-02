@@ -10,7 +10,7 @@ spec:
         service: homer
     spec:
       containers:
-      - image: "{{REPO}}/clearwater/homer:latest"
+      - image: "{{REPO:homer}}"
         imagePullPolicy: Always
         name: homer
         ports:

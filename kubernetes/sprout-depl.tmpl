@@ -1,25 +1,24 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: ralf
+  name: sprout
 spec:
   replicas: 1
   selector:
     matchLabels:
-      service: ralf
+      service: sprout
   template:
     metadata:
       labels:
-        service: ralf
+        service: sprout
         snmp: enabled
     spec:
       containers:
-      - image: "{{REPO}}/clearwater/ralf:latest"
+      - image: "{{REPO:sprout}}"
         imagePullPolicy: Always
-        name: ralf
+        name: sprout
         ports:
         - containerPort: 22
-        - containerPort: 10888
         envFrom:
         - configMapRef:
               name: env-vars
@@ -29,22 +28,23 @@ spec:
             fieldRef:
               fieldPath: status.podIP
         livenessProbe:
-          tcpSocket:
-            port: 10888
+          exec:
+            command: ["/bin/bash", "/usr/share/kubernetes/liveness.sh", "5052 5054"]
           initialDelaySeconds: 30
+          periodSeconds: 3
         readinessProbe:
-          tcpSocket:
-            port: 10888
+          exec:
+            command: ["/bin/bash", "/usr/share/kubernetes/liveness.sh", "5052 5054"]
         volumeMounts:
-        - name: ralflogs
-          mountPath: /var/log/ralf
+        - name: sproutlogs
+          mountPath: /var/log/sprout
       - image: busybox
         name: tailer
-        command: [ "tail", "-F", "/var/log/ralf/ralf_current.txt" ]
+        command: [ "tail", "-F", "/var/log/sprout/sprout_current.txt" ]
         volumeMounts:
-        - name: ralflogs
-          mountPath: /var/log/ralf
+        - name: sproutlogs
+          mountPath: /var/log/sprout
       volumes:
-      - name: ralflogs
+      - name: sproutlogs
         emptyDir: {}
       restartPolicy: Always

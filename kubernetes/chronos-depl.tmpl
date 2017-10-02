@@ -13,7 +13,7 @@ spec:
     spec:
       terminationGracePeriodSeconds: 120
       containers:
-      - image: "{{REPO}}/clearwater/chronos:latest"
+      - image: "{{REPO:chronos}}"
         imagePullPolicy: Always
         name: chronos
         ports:
