@@ -13,7 +13,7 @@ spec:
     spec:
       terminationGracePeriodSeconds: 120
       containers:
-      - image: "{{IMAGE:chronos}}"
+      - image: "{{IMAGE_PATH}}/chronos:{{IMAGE_TAG}}"
         imagePullPolicy: Always
         name: chronos
         ports:

@@ -10,7 +10,7 @@ spec:
         service: ellis
     spec:
       containers:
-      - image: "{{IMAGE:ellis}}"
+      - image: "{{IMAGE_PATH}}/ellis:{{IMAGE_TAG}}"
         imagePullPolicy: Always
         name: ellis
         ports:

@@ -108,8 +108,8 @@ Instead of using Docker Compose, you can deploy Clearwater in Kubernetes. This r
 
 - Update the Kubernetes yaml to match your deployment.
 
-  - Generate the K8s yaml files from the templates by running `IMAGE_PATH=<path to your repo> IMAGE_TAG=<tag for the images you want to use> k8s-subst kubernetes`
-    The script assumes that the Clearwater images that you want to use are located at IMAGE_PATH/<image name e.g. bono>:<IMAGE_TAG>
+  - Generate the Kubernetes yaml files from the templates by going to the kubernetes directory and running `./k8s-gencfg --image_path=<path to your repo> --image_tag=<tag for the images you want to use>`
+    The script assumes that the Clearwater images that you want to use are located at {{image_path}}/<image name e.g. bono>:{{image_tag}}
 
   - Decide how you want to access Bono and Ellis from outside of the cluster.
 
@@ -157,16 +157,20 @@ rake test[default.svc.cluster.local] PROXY="bono.default.svc.cluster.local" SIGN
 If you have had to expose Bono and Ellis in a non-standard manner, you may need to change the `PROXY` argument, and add an `ELLIS` argument, so that the test scripts are able to access these services. e.g.
 
 ```
-rake test[default.svc.cluster.local] PROXY={{Bono external IP addresss}} ELLIS={{external IP address of one of your nodes}}:30080 SIGNUP_CODE=secret
+rake test[default.svc.cluster.local] PROXY={{Bono service DNS/IP}} ELLIS={{Ellis service/IP}} SIGNUP_CODE=secret
 ```
 
 ### Scaling the deployment
 
-All of the stateless Clearwater services: i.e. everything except Cassandra, Chronos and Astaire can be dynamically scaled up and down by running e.g. 
+Most Clearwater services can be dynamically scaled up and down by running e.g. 
 `kubectl scale deployment sprout --replicas=3`
-(The other exception is Bono depending on how it is exposed external to your deployment -- see above).
+Exceptions are:
+- You can only have a single Bono if Bono pods do not have externally routable IP addresses.
+- Astaire and Chronos clusters can be scaled up and down so long as pods are terminated in such a way that their prestop hook is executed.
+- The Cassandra cluster can be scaled up but not down.
+See general limitations above.
 
-Astaire and Chronos clusters can also be scaled up and down (although see general limitations above).   The Cassandra cluster can be scaled up but not down (see general limitations above).
+After scaling the Chronos, Astaire or Cassandra clusters you should wait for the clusters to stabilise before performing another scaling operation.  You can monitor cluster state by running cw-check_cluster_state in a pod belonging to any of the clusters.
 
 ## Manual Turn-Up
 

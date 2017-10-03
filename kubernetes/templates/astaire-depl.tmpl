@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: astaire
 spec:
-  replicas: 3
+  replicas: 1
   template:
     metadata:
       labels:
@@ -11,7 +11,7 @@ spec:
     spec:
       terminationGracePeriodSeconds: 120
       containers:
-      - image: "{{IMAGE:astaire}}"
+      - image: "{{IMAGE_PATH}}/astaire:{{IMAGE_TAG}}"
         imagePullPolicy: Always
         name: astaire
         ports:

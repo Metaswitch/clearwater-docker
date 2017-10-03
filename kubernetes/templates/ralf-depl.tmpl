@@ -14,7 +14,7 @@ spec:
         snmp: enabled
     spec:
       containers:
-      - image: "{{IMAGE:ralf}}"
+      - image: "{{IMAGE_PATH}}/ralf:{{IMAGE_TAG}}"
         imagePullPolicy: Always
         name: ralf
         ports:

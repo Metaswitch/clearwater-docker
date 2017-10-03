@@ -10,7 +10,7 @@ spec:
         service: homer
     spec:
       containers:
-      - image: "{{IMAGE:homer}}"
+      - image: "{{IMAGE_PATH}}/homer:{{IMAGE_TAG}}"
         imagePullPolicy: Always
         name: homer
         ports:

@@ -14,7 +14,7 @@ spec:
         snmp: enabled
     spec:
       containers:
-      - image: "{{IMAGE:sprout}}"
+      - image: "{{IMAGE_PATH}}/sprout:{{IMAGE_TAG}}"
         imagePullPolicy: Always
         name: sprout
         ports:

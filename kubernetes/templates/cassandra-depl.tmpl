@@ -10,7 +10,7 @@ spec:
         service: cassandra
     spec:
       containers:
-      - image: "{{IMAGE:cassandra}}"
+      - image: "{{IMAGE_PATH}}/cassandra:{{IMAGE_TAG}}"
         imagePullPolicy: Always
         name: cassandra
         ports:
