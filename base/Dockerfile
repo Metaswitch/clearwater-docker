@@ -27,6 +27,7 @@ RUN /etc/init.d/clearwater-infrastructure restart
 COPY clearwater-infrastructure.supervisord.conf /etc/supervisor/conf.d/clearwater-infrastructure.conf
 COPY clearwater-group.supervisord.conf /etc/supervisor/conf.d/clearwater-group.conf
 COPY snmpd.supervisord.conf /etc/supervisor/conf.d/snmpd.conf
+COPY pre-stop /usr/bin/pre-stop
 
 # Changes to make everything work with Kubernetes
 RUN apt-get install -y netcat-openbsd

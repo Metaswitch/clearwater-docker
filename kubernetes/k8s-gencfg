@@ -1,0 +1,44 @@
+#!/usr/bin/python -u
+"""
+Generate K8s config from template files
+"""
+
+import argparse
+import os
+import re
+
+def parse_file(args, input_file, output_file):
+    with open(input_file) as file:
+        input_data = file.read()
+
+    output_data = input_data.replace("{{IMAGE_PATH}}", args.image_path).replace("{{IMAGE_TAG}}", args.image_tag)
+
+    with open(output_file, "w") as file:
+        file.write(output_data)
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+            '--image_path', required=True,
+            help='The path to the images to use')
+    parser.add_argument(
+            '--image_tag', required=True, 
+            help='The image tag to use')
+    args = parser.parse_args()
+
+    template_dir = "templates"
+    if not os.path.isdir(template_dir):
+        print("This script must be run from the kubernetes directory")
+
+    for template_file_name in os.listdir(template_dir):
+        template_name = template_file_name.split('.')[0]
+         
+        k8s_cfg_file_name = template_name + ".yaml"
+
+        print("Generate %s from %s" % (k8s_cfg_file_name, template_file_name))  
+
+        parse_file(args, os.path.join(template_dir, template_file_name), template_name+".yaml")
+
+ 
+
+

@@ -10,7 +10,7 @@ spec:
         service: ellis
     spec:
       containers:
-      - image: "{{REPO}}/clearwater/ellis:latest"
+      - image: "{{IMAGE_PATH}}/ellis:{{IMAGE_TAG}}"
         imagePullPolicy: Always
         name: ellis
         ports:

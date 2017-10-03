@@ -14,7 +14,7 @@ spec:
         snmp: enabled
     spec:
       containers:
-      - image: "{{REPO}}/clearwater/homestead-prov:latest"
+      - image: "{{IMAGE_PATH}}/homestead-prov:{{IMAGE_TAG}}"
         imagePullPolicy: Always
         name: homestead-prov
         ports:

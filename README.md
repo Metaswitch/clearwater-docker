@@ -37,6 +37,14 @@ By default Docker images built using clearwater-docker will pull the latest stab
 
 ![alt text](docs/images/clearwater-docker_in_scope.jpg "Clearwater-Docker dispayed in Scope")
 
+## Limitations
+
+Note that scaling of Docker deployments is a work in progress and there are currently a number of known issues...
+
+* Homestead-prov and Ellis don’t load balance across multiple Cassandra nodes.
+
+* In general deleting pods from storage clusters (Cassandra, Chronos or Astaire) is not supported.  Pods that are deleted will not get removed from the clusters and the clusters will end up broken.  The exception is when deployed under Kubernetes -- in this scenario Chronos and Astaire pods can be terminated, so long as this is done gracefully such that their prestop event hook is executed.  This means that Astaire and Chronos clusters (under Kubernetes) can be dynamcially scaled up and down.
+
 ## Using Compose
 
 There is a [Compose file](minimal-distributed.yaml) to instantiate a minimal (non-fault-tolerant) distributed Clearwater deployment under Docker.
@@ -63,21 +71,13 @@ To start the Clearwater services, run:
 
 #### Scaling the deployment
 
-Having started up a deployment, it is then possible to scale it by adding more Sprout, Astaire, Chronos or Cassandra nodes.  E.g. to spin up an additional node of each of these types, run:
+Having started up a deployment, it is then possible to scale it by adding or removing additional nodes.  E.g. run
 
     sudo docker-compose -f minimal-distributed.yaml scale sprout=2 astaire=2 chronos=2 cassandra=2
 
-Note that scaling of Docker deployments is a work in progress and there are currently a number of known issues...
+Note that it is not possible to scale *down* storage node clusters -- see limitations above.
 
-* Bono doesn’t automatically start using new Sprout nodes unless the Bono process is restarted, e.g.
-
-    `sudo docker exec clearwaterdocker_bono_1 sudo service bono restart`
-
-* Homestead-prov and Ellis don’t load balance across multiple Cassandra nodes.
-
-* There is no tested or documented process for scaling down clusters of storage nodes in Docker -- it isn't sufficient to just delete the containers as they need to be explicitly decommissioned and removed from the clusters.
-
-If you scale up the clusters of storage nodes, you can monitor progress as new nodes join the clusters by running `utils/show_cluster_state.sh`.
+If you scale *up* the clusters of storage nodes, you can monitor progress as new nodes join the clusters by running `utils/show_cluster_state.sh`.
 
 ## Using Kubernetes
 
@@ -108,7 +108,8 @@ Instead of using Docker Compose, you can deploy Clearwater in Kubernetes. This r
 
 - Update the Kubernetes yaml to match your deployment.
 
-  - In each file ending depl.yaml you will need to replace {{REPO}} with the path to the repository that you pushed your images to
+  - Generate the Kubernetes yaml files from the templates by going to the kubernetes directory and running `./k8s-gencfg --image_path=<path to your repo> --image_tag=<tag for the images you want to use>`
+    The script assumes that the Clearwater images that you want to use are located at {{image_path}}/<image name e.g. bono>:{{image_tag}}
 
   - Decide how you want to access Bono and Ellis from outside of the cluster.
 
@@ -156,8 +157,20 @@ rake test[default.svc.cluster.local] PROXY="bono.default.svc.cluster.local" SIGN
 If you have had to expose Bono and Ellis in a non-standard manner, you may need to change the `PROXY` argument, and add an `ELLIS` argument, so that the test scripts are able to access these services. e.g.
 
 ```
-rake test[default.svc.cluster.local] PROXY={{Bono external IP addresss}} ELLIS={{external IP address of one of your nodes}}:30080 SIGNUP_CODE=secret
+rake test[default.svc.cluster.local] PROXY={{Bono service DNS/IP}} ELLIS={{Ellis service/IP}} SIGNUP_CODE=secret
 ```
+
+### Scaling the deployment
+
+Most Clearwater services can be dynamically scaled up and down by running e.g. 
+`kubectl scale deployment sprout --replicas=3`
+Exceptions are:
+- You can only have a single Bono if Bono pods do not have externally routable IP addresses.
+- Astaire and Chronos clusters can be scaled up and down so long as pods are terminated in such a way that their prestop hook is executed.
+- The Cassandra cluster can be scaled up but not down.
+See general limitations above.
+
+After scaling the Chronos, Astaire or Cassandra clusters you should wait for the clusters to stabilise before performing another scaling operation.  You can monitor cluster state by running cw-check_cluster_state in a pod belonging to any of the clusters.
 
 ## Manual Turn-Up
 

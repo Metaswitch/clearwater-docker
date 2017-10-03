@@ -10,7 +10,7 @@ spec:
         service: cassandra
     spec:
       containers:
-      - image: "{{REPO}}/clearwater/cassandra:latest"
+      - image: "{{IMAGE_PATH}}/cassandra:{{IMAGE_TAG}}"
         imagePullPolicy: Always
         name: cassandra
         ports:

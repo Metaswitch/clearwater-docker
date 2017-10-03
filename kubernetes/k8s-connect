@@ -1,0 +1,4 @@
+#!/bin/bash
+# Takes a single argument which is a pod type to connect to, finds the first running pod of that type and runs bash in it.
+[ -z "$1" ] && { echo "USAGE: k8s-connect SERVICE_NAME.   e.g. "k8s-connect astaire""; exit 1; }
+kubectl exec -it $(kubectl get pods | grep $1 | grep Running | awk '{print $1;}' | head -n1) bash

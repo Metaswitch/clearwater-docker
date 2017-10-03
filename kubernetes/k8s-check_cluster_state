@@ -1,0 +1,3 @@
+#!/bin/bash
+# Find the first Astaire, Cassandra or Chronos pod and run cw-check_cluster_state in it.
+kubectl exec -it $(kubectl get pods | grep -E "astaire|cassandra|chronos" | grep Running | awk '{print $1;}' | head -n1) cw-check_cluster_state
