@@ -29,7 +29,8 @@ spec:
         livenessProbe:
           tcpSocket:
             port: 11311
-          initialDelaySeconds: 90
+          periodSeconds: 10
+          failureThreshold: 9
         readinessProbe:
           tcpSocket:
             port: 11311
