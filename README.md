@@ -1,18 +1,13 @@
 
 # Clearwater Docker
 
-This repository contains [Dockerfiles](https://docs.docker.com/reference/builder/) for use with [Docker](https://www.docker.com/) and [Compose](https://docs.docker.com/compose/) to deploy [Project Clearwater](http://www.projectclearwater.org).
+This repository contains instructions and resources for deploying [Project Clearwater](http://www.projectclearwater.org) as [Docker](https://www.docker.com/) containers.  It describes three deployment options -- the first two are recommended.   
 
-There are three options for installing Docker -- the first two are recommended:
+- Using [Docker Compose](https://docs.docker.com/compose/) for quick deployments on a single host.
+- Using [Kubernetes](https://kubernetes.io/) for orchestrated deployments on clusters of machines.
+- By deploying the containers manually.
 
-- Using Docker Compose.
-
-- Using Kuberenetes.
-
-- Manually. In this case you need to use some Docker options to set up the
-  networking config that Compose or Kubernetes would set up automatically.
-
-You should follow the "Common Preparation" section, then either the "Using Compose" or the "Manual Turn-Up" section.
+You should follow the "Common Preparation" section, then either the "Using Compose", "Using Kubernetes" or the "Manual Turn-Up" section.
 
 ## Common Preparation
 
