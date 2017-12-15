@@ -1,22 +1,22 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: astaire
+  name: rogers
 spec:
   replicas: 1
   template:
     metadata:
       labels:
-        service: astaire
+        service: rogers
     spec:
       terminationGracePeriodSeconds: 120
       containers:
-      - image: "{{IMAGE_PATH}}/astaire:{{IMAGE_TAG}}"
+      - image: "{{IMAGE_PATH}}/rogers:{{IMAGE_TAG}}"
         imagePullPolicy: Always
-        name: astaire
+        name: rogers
         ports:
         - containerPort: 22
-        - containerPort: 11211
+        - containerPort: 11311
         envFrom:
         - configMapRef:
               name: env-vars
@@ -27,26 +27,26 @@ spec:
               fieldPath: status.podIP
         livenessProbe:
           tcpSocket:
-            port: 11211
+            port: 11311
           periodSeconds: 10
           failureThreshold: 9
         readinessProbe:
           tcpSocket:
-            port: 11211
+            port: 11311
         volumeMounts:
-        - name: astairelogs
-          mountPath: /var/log/astaire
+        - name: rogerslogs
+          mountPath: /var/log/rogers
         lifecycle:
           preStop:
             exec:
               command: ["/bin/bash", "-c", "/usr/bin/pre-stop"]
       - image: busybox
         name: tailer
-        command: [ "tail", "-F", "/var/log/astaire/astaire_current.txt" ]
+        command: [ "tail", "-F", "/var/log/rogers/rogers_current.txt" ]
         volumeMounts:
-        - name: astairelogs
-          mountPath: /var/log/astaire
+        - name: rogerslogs
+          mountPath: /var/log/rogers
       volumes:
-      - name: astairelogs
+      - name: rogerslogs
         emptyDir: {}
       restartPolicy: Always
