@@ -74,12 +74,6 @@ services:
       - ADDITIONAL_SHARED_CONFIG
     ports:
       - 22
-  rogers:
-    build: rogers
-    environment:
-      - ADDITIONAL_SHARED_CONFIG
-    ports:
-      - 22
   ellis:
     build: ellis
     environment:

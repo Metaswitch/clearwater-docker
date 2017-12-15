@@ -17,6 +17,7 @@ spec:
         ports:
         - containerPort: 22
         - containerPort: 11211
+        - containerPort: 11311
         envFrom:
         - configMapRef:
               name: env-vars
@@ -27,12 +28,12 @@ spec:
               fieldPath: status.podIP
         livenessProbe:
           tcpSocket:
-            port: 11211
+            port: 11311
           periodSeconds: 10
           failureThreshold: 9
         readinessProbe:
           tcpSocket:
-            port: 11211
+            port: 11311
         volumeMounts:
         - name: astairelogs
           mountPath: /var/log/astaire

@@ -1,7 +1,7 @@
 
 # Clearwater Docker
 
-This repository contains instructions and resources for deploying [Project Clearwater](http://www.projectclearwater.org) as [Docker](https://www.docker.com/) containers.  It describes three deployment options -- the first two are recommended.
+This repository contains instructions and resources for deploying [Project Clearwater](http://www.projectclearwater.org) as [Docker](https://www.docker.com/) containers.  It describes three deployment options -- the first two are recommended.   
 
 - Using [Docker Compose](https://docs.docker.com/compose/) for quick deployments on a single host.
 - Using [Kubernetes](https://kubernetes.io/) for orchestrated deployments on clusters of machines.
@@ -38,7 +38,7 @@ Note that scaling of Docker deployments is a work in progress and there are curr
 
 * Homestead-prov and Ellis don’t load balance across multiple Cassandra nodes.
 
-* In general deleting pods from storage clusters (Cassandra, Chronos or Astaire) is not supported.  Pods that are deleted will not get removed from the clusters and the clusters will end up broken.  The exception is when deployed under Kubernetes -- in this scenario Chronos and Astaire pods can be terminated, so long as this is done gracefully such that their prestop event hook is executed.  This means that Astaire and Chronos clusters (under Kubernetes) can be dynamically scaled up and down.
+* In general deleting pods from storage clusters (Cassandra, Chronos or Astaire) is not supported.  Pods that are deleted will not get removed from the clusters and the clusters will end up broken.  The exception is when deployed under Kubernetes -- in this scenario Chronos and Astaire pods can be terminated, so long as this is done gracefully such that their prestop event hook is executed.  This means that Astaire and Chronos clusters (under Kubernetes) can be dynamcially scaled up and down.
 
 ## Using Compose
 
@@ -84,11 +84,11 @@ Instead of using Docker Compose, you can deploy Clearwater in Kubernetes. This r
 
         # Build the Clearwater docker images.
         cd clearwater-docker
-        for i in base astaire rogers cassandra chronos bono ellis homer homestead homestead-prov ralf sprout ; do docker build -t clearwater/$i $i ; done
+        for i in base astaire cassandra chronos bono ellis homer homestead homestead-prov ralf sprout ; do docker build -t clearwater/$i $i ; done
 
 - Next, push them to your repository (which must be accessible from the Kubernetes deployment)
 
-        for i in base astaire rogers cassandra chronos bono ellis homer homestead homestead-prov ralf sprout
+        for i in base astaire cassandra chronos bono ellis homer homestead homestead-prov ralf sprout
         do
             docker tag clearwater/$i:latest path_to_your_repo/clearwater/$i:latest
             docker push path_to_your_repo/clearwater/$i:latest
@@ -157,7 +157,7 @@ rake test[default.svc.cluster.local] PROXY={{Bono service DNS/IP}} ELLIS={{Ellis
 
 ### Scaling the deployment
 
-Most Clearwater services can be dynamically scaled up and down by running e.g.
+Most Clearwater services can be dynamically scaled up and down by running e.g. 
 `kubectl scale deployment sprout --replicas=3`
 Exceptions are:
 - You can only have a single Bono if Bono pods do not have externally routable IP addresses.
@@ -177,7 +177,7 @@ To prepare your system to deploy Clearwater without using Compose, after running
 
     # Build the Clearwater docker images.
     cd clearwater-docker
-    for i in base astaire rogers cassandra chronos bono ellis homer homestead homestead-prov ralf sprout ; do sudo docker build -t clearwater/$i $i ; done
+    for i in base astaire cassandra chronos bono ellis homer homestead homestead-prov ralf sprout ; do sudo docker build -t clearwater/$i $i ; done
 
 #### Starting Clearwater
 
@@ -186,7 +186,6 @@ To start the Clearwater services, run:
     sudo docker network create --driver bridge clearwater_nw
     sudo docker run -d --net=clearwater_nw --name etcd quay.io/coreos/etcd:v2.2.5 -name etcd0 -advertise-client-urls http://etcd:2379,http://etcd:4001 -listen-client-urls http://0.0.0.0:2379,http://0.0.0.0:4001 -initial-advertise-peer-urls http://etcd:2380 -listen-peer-urls http://0.0.0.0:2380  -initial-cluster etcd0=http://etcd:2380 -initial-cluster-state new
     sudo docker run -d --net=clearwater_nw --name astaire -p 22 clearwater/astaire
-    sudo docker run -d --net=clearwater_nw --name rogers -p 22 clearwater/rogers
     sudo docker run -d --net=clearwater_nw --name cassandra -p 22 --sysctl net.ipv6.conf.lo.disable_ipv6=0 clearwater/cassandra
     sudo docker run -d --net=clearwater_nw --name chronos -p 22 clearwater/chronos
     sudo docker run -d --net=clearwater_nw --name homestead -p 22 clearwater/homestead
@@ -201,7 +200,7 @@ The Clearwater Docker images use DNS for service discovery - they require, for e
 
 #### Scaling the deployment
 
-It is possible to spin up additional Sprout, Cassandra, Astaire, Rogers and Chronos nodes simply by repeating the relevant command `docker run` command but providing a different name.  E.g.
+It is possible to spin up additional Sprout, Cassandra, Astaire and Chronos nodes simply by repeating the relevant command `docker run` command but providing a different name.  E.g.
 
     sudo docker run -d --net=clearwater_nw --name astaire_2 -p 22 clearwater/astaire
 
