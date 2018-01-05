@@ -2,8 +2,11 @@ FROM clearwater/base
 MAINTAINER maintainers@projectclearwater.org
 
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --force-yes mysql-server
-RUN /etc/init.d/mysql start && apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --force-yes ellis
-RUN /etc/init.d/mysql start
+
+# mysql won't start on overlay or overlay2 storage drivers unless you touch the
+# files under /var/lib/msql first.
+# See https://github.com/docker/for-linux/issues/72#issuecomment-319904698
+RUN find /var/lib/mysql -exec touch {} \; && /etc/init.d/mysql start && apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --force-yes ellis
 
 COPY create_numbers.sh /usr/share/clearwater/ellis/create_numbers.sh
 COPY ellis.supervisord.conf /etc/supervisor/conf.d/ellis.conf
