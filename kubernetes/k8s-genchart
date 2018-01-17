@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+TEMPLATES="clearwater/templates"
+
+./k8s-gencfg --image_path="{{ .Values.image.path }}" --image_tag="{{ .Values.image.tag }}"
+
+mkdir -p ${TEMPLATES}
+
+mv *.yaml ${TEMPLATES}

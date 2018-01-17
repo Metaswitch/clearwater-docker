@@ -139,9 +139,21 @@ If the above requirements are not met (external devices cannot resolve Kubernete
 
 ### Deploy Clearwater in Kubernetes
 
+#### Using kubectl
+
 To deploy the images, you should simply run `kubectl apply -f clearwater-docker/kubernetes`.  It may take a minute or so before the deployment is fully established, the load balancer is created, and the deployment is ready to accept calls.
 
 Note this will deploy all containers.  If you don't need e.g. Bono, Homestead-prov, Ellis etc. then just move the corresponding svc and depl files out of the directory before running the create command.
+
+#### Using helm
+
+To create a helm chart, you should simply run `./k8s-genchart`.
+
+If you want to use your own docker registry, modify `clearwater/values.yaml`.
+
+Then run `helm install clearwater` inside `kubernetes` directory to deploy.
+
+### Run live tests against the deployment
 
 If you have deployed using the standard configuration then you can run the [clearwater-live-tests](https://github.com/Metaswitch/clearwater-live-test/) against the deployment using e.g.
 
