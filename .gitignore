@@ -1,3 +1,4 @@
 *.pyc
 kubernetes/*.yaml
-kubernetes/clearwater/templates/*.yaml
+kubernetes/clearwater
+
