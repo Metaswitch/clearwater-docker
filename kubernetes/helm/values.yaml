@@ -1,0 +1,6 @@
+# Default values for clearwater.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+image:
+  path: {{IMAGE_PATH}}
+  tag: {{IMAGE_TAG}}

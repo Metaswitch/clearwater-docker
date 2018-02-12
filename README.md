@@ -104,7 +104,7 @@ Instead of using Docker Compose, you can deploy Clearwater in Kubernetes. This r
 - Update the Kubernetes yaml to match your deployment.
 
   - Generate the Kubernetes yaml files from the templates by going to the kubernetes directory and running `./k8s-gencfg --image_path=<path to your repo> --image_tag=<tag for the images you want to use>`
-    The script assumes that the Clearwater images that you want to use are located at {{image_path}}/\<image name e.g. bono\>:{{image_tag}}
+    The script assumes that the Clearwater images that you want to use are located at {{image_path}}/\<image name e.g. bono\>:{{image_tag}}. It will also generate a helm chart in `/kubernetes/clearwater`.
 
   - Decide how you want to access Bono and Ellis from outside of the cluster.
 
@@ -139,9 +139,17 @@ If the above requirements are not met (external devices cannot resolve Kubernete
 
 ### Deploy Clearwater in Kubernetes
 
+#### Using kubectl
+
 To deploy the images, you should simply run `kubectl apply -f clearwater-docker/kubernetes`.  It may take a minute or so before the deployment is fully established, the load balancer is created, and the deployment is ready to accept calls.
 
 Note this will deploy all containers.  If you don't need e.g. Bono, Homestead-prov, Ellis etc. then just move the corresponding svc and depl files out of the directory before running the create command.
+
+#### Using helm
+
+Run `helm install clearwater` inside `kubernetes` directory to deploy.
+
+### Run live tests against the deployment
 
 If you have deployed using the standard configuration then you can run the [clearwater-live-tests](https://github.com/Metaswitch/clearwater-live-test/) against the deployment using e.g.
 

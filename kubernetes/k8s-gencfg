@@ -7,6 +7,7 @@ import argparse
 import os
 import re
 
+
 def parse_file(args, input_file, output_file):
     with open(input_file) as file:
         input_data = file.read()
@@ -15,6 +16,16 @@ def parse_file(args, input_file, output_file):
 
     with open(output_file, "w") as file:
         file.write(output_data)
+
+def parse_files_in_dir(args, src, dest):
+    for template_file_name in os.listdir(src):
+        template_name = template_file_name.split('.')[0]
+
+        output_file_name = template_name + ".yaml"
+
+        print("Generate %s from %s" % (output_file_name, template_file_name))
+
+        parse_file(args, os.path.join(src, template_file_name), os.path.join(dest, template_name+".yaml"))
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -26,19 +37,22 @@ if __name__ == '__main__':
             help='The image tag to use')
     args = parser.parse_args()
 
+    # Create kubernetes manifests
     template_dir = "templates"
+
     if not os.path.isdir(template_dir):
         print("This script must be run from the kubernetes directory")
 
-    for template_file_name in os.listdir(template_dir):
-        template_name = template_file_name.split('.')[0]
-         
-        k8s_cfg_file_name = template_name + ".yaml"
+    parse_files_in_dir(args, src=template_dir, dest='.')
 
-        print("Generate %s from %s" % (k8s_cfg_file_name, template_file_name))  
+    # Create helm chart
+    helmchart_dir = "clearwater"
+    helmchart_templates_dir = os.path.join(helmchart_dir, "templates")
 
-        parse_file(args, os.path.join(template_dir, template_file_name), template_name+".yaml")
+    if not os.path.exists(helmchart_templates_dir):
+        os.makedirs(helmchart_templates_dir)
 
- 
+    parse_files_in_dir(args, src="helm", dest=helmchart_dir)
 
-
+    helm_args=parser.parse_args(args=['--image_path', '{{ .Values.image.path }}', '--image_tag', '{{ .Values.image.tag }}'])
+    parse_files_in_dir(helm_args, src=template_dir, dest=helmchart_templates_dir)

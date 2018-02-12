@@ -1,2 +1,4 @@
 *.pyc
 kubernetes/*.yaml
+kubernetes/clearwater
+
