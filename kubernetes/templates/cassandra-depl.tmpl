@@ -34,4 +34,6 @@ spec:
         readinessProbe:
           exec:
             command: ["/bin/bash", "/usr/share/kubernetes/liveness.sh", "7000 9042 9160"]
+      imagePullSecrets:
+      - name: {{IMAGE_SECRET}}
       restartPolicy: Always

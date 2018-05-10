@@ -31,4 +31,6 @@ spec:
         readinessProbe:
           tcpSocket:
             port: 7888
+      imagePullSecrets:
+      - name: {{IMAGE_SECRET}}
       restartPolicy: Always

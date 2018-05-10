@@ -51,4 +51,6 @@ spec:
       volumes:
       - name: chronoslogs
         emptyDir: {}
+      imagePullSecrets:
+      - name: {{IMAGE_SECRET}}
       restartPolicy: Always
