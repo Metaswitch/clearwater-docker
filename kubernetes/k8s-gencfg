@@ -12,15 +12,11 @@ def parse_file(args, input_file, output_file):
     with open(input_file) as file:
         input_data = file.read()
 
-    data = input_data.replace("{{IMAGE_PATH}}", args.image_path)
-    data = data.replace("{{IMAGE_TAG}}", args.image_tag)
-
-    # this argument is optional
+    # IMAGE_SECRET is an optional argument
     # ~ means null in yaml
-    output_data = data.replace("{{IMAGE_SECRET}}", args.image_secret if (args.image_secret != None) else "~")
-
-
-        
+    output_data = input_data.replace("{{IMAGE_PATH}}", args.image_path) \
+                  .replace("{{IMAGE_TAG}}", args.image_tag) \
+                  .replace("{{IMAGE_SECRET}}", args.image_secret if (args.image_secret != None) else "~") 
 
     with open(output_file, "w") as file:
         file.write(output_data)
