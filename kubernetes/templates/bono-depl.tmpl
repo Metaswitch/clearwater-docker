@@ -60,4 +60,6 @@ spec:
       volumes:
       - name: bonologs
         emptyDir: {}
+      imagePullSecrets:
+      - name: {{IMAGE_SECRET}}
       restartPolicy: Always

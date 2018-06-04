@@ -101,9 +101,11 @@ Instead of using Docker Compose, you can deploy Clearwater in Kubernetes. This r
 
   e.g. `kubectl create configmap env-vars --from-literal=ZONE=default.svc.cluster.local --from-literal=ADDITIONAL_SHARED_CONFIG=hss_hostname=hss.example.com\\nhss_realm=example.com`
 
+- If you're using a private container registry (one that requires credentials to pull images from), create a secret with the required credentials. e.g. `kubectl create secret docker-registry myregistrykey --docker-server=$DOCKER_REGISTRY_SERVER --docker-username=$DOCKER_USER --docker-password=$DOCKER_PASSWORD --docker-email=$DOCKER_EMAIL`
 - Update the Kubernetes yaml to match your deployment.
 
   - Generate the Kubernetes yaml files from the templates by going to the kubernetes directory and running `./k8s-gencfg --image_path=<path to your repo> --image_tag=<tag for the images you want to use>`
+    If you're using a private container registry, add the argument `--image_secret=myregistrykey` (where `myregistrykey` matches the secret you made earlier)
     The script assumes that the Clearwater images that you want to use are located at {{image_path}}/\<image name e.g. bono\>:{{image_tag}}. It will also generate a helm chart in `/kubernetes/clearwater`.
 
   - Decide how you want to access Bono and Ellis from outside of the cluster.

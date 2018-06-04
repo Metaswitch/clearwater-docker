@@ -35,4 +35,6 @@ spec:
         readinessProbe:
           exec:
             command: ["/bin/bash", "/usr/share/clearwater/bin/poll_homestead-prov.sh"]
+      imagePullSecrets:
+      - name: {{IMAGE_SECRET}}
       restartPolicy: Always

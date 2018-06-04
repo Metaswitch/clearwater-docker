@@ -12,7 +12,11 @@ def parse_file(args, input_file, output_file):
     with open(input_file) as file:
         input_data = file.read()
 
-    output_data = input_data.replace("{{IMAGE_PATH}}", args.image_path).replace("{{IMAGE_TAG}}", args.image_tag)
+    # IMAGE_SECRET is an optional argument
+    # ~ means null in yaml
+    output_data = input_data.replace("{{IMAGE_PATH}}", args.image_path) \
+                  .replace("{{IMAGE_TAG}}", args.image_tag) \
+                  .replace("{{IMAGE_SECRET}}", args.image_secret if (args.image_secret != None) else "~") 
 
     with open(output_file, "w") as file:
         file.write(output_data)
@@ -27,6 +31,7 @@ def parse_files_in_dir(args, src, dest):
 
         parse_file(args, os.path.join(src, template_file_name), os.path.join(dest, template_name+".yaml"))
 
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -35,6 +40,9 @@ if __name__ == '__main__':
     parser.add_argument(
             '--image_tag', required=True, 
             help='The image tag to use')
+    parser.add_argument(
+            '--image_secret', required=False, 
+            help='(Optional) The kubernetes secret for authenticating with the container registry')
     args = parser.parse_args()
 
     # Create kubernetes manifests
