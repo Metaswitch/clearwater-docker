@@ -250,6 +250,10 @@ There are a few scripts that offer short cuts to querying aspects of your deploy
     # Show information about the state of the storage clusters
     utils/show_cluster_state.sh
 
+If one of your pods is failing and you can't `exec` into it because it's in a crash loop, just run `kubectl logs` on the sidecar instead. e.g.
+
+    kubectl logs astaire-7b74ff8df9-5lhz6 -c tailer
+
 ## Cleaning Up
 
 If you wish to destroy your deployment either to redeploy with a different configuration or version or to free up resources on your docker host, the following may be useful commands:
