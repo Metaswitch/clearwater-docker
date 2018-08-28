@@ -138,6 +138,7 @@ If the above requirements are not met (external devices cannot resolve Kubernete
     If using [AKS](https://docs.microsoft.com/en-us/azure/aks/)
     - You must disable [HTTP Application routing](https://docs.microsoft.com/en-us/azure/aks/http-application-routing) when creating the cluster
     - you must replace `clusterIP: None` with `type: LoadBalancer` in `bono-svc.yaml`.
+
     For GKE and other platforms you must:
     - Have a static external IP address available that the load balancer can use (e.g. on GKE you must explicitly provision this first)
     - Replace `clusterIP: None` in bono-svc.yaml with `type: "LoadBalancer"`, and add a line following this of `loadBalancerIP: <static IP>`
