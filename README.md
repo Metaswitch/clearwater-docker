@@ -125,16 +125,21 @@ If the above requirements are not met (external devices cannot resolve Kubernete
     - Depending on your platform you may need to manually create a firewall rule to allow access to this port.  E.g. on GKE this can be done from the command line using gcloud if you have it installed.  e.g.
         `gcloud compute firewall-rules create ellis --allow tcp:30080`
     - The Ellis provisioning interface can then be accessed on http:<IP address of any Kubernetes node>:30080
+  - If you are unable to access the Ellis web interface (e.g. this happens with [AKS](https://docs.microsoft.com/en-us/azure/aks/)) then you should instead replace `clusterIP: None` with `type: LoadBalancer`.
 
   - Bono is more challenging to expose due to the following requirements:
     - Each Bono pod must be configured with an externally routable IP address by which that specific pod can be uniquely accessed. Bono will record-route itself in SIP messages using this IP and susbequent SIP messages to that IP address must be guaranteed to hit the same Bono instance.
     - Port 5060 in the Bono pod must be accessible via port 5060 on the external IP address.  It is not possible to e.g. NAT port 5060 in the pod to port 30060 on the external IP.  This is because Bono always record-route's itself in SIP messages as <PUBLIC_IP>:5060.
 
-    On e.g. GKE the easiest solution is to use a LoadBalancer with a statically assigned external IP address. This brings in the following limitations:
+    On e.g. [GKE](https://cloud.google.com/kubernetes-engine/) the easiest solution is to use a LoadBalancer with a statically assigned external IP address. This brings in the following limitations:
     - you can only have a single Bono instance (as subsequent SIP requests in a session must be guaranteed to be routed back to the same Bono instance so you cannot have the load balancer balance across multiple Bonos)
     - the deployment can only support SIP over UDP or SIP over TCP (not both simultaneously) as Bono cannot have separate external IP addresses for each of UDP and TCP, and a single Kubernetes LoadBalancer service can't support multiple protocols.  By default bono-svc.yaml is configured to expose SIP over TCP.
 
-    To configure this, you must:
+    If using [AKS](https://docs.microsoft.com/en-us/azure/aks/)
+    - You must disable [HTTP Application routing](https://docs.microsoft.com/en-us/azure/aks/http-application-routing) when creating the cluster
+    - you must replace `clusterIP: None` with `type: LoadBalancer` in `bono-svc.yaml`.
+
+    For GKE and other platforms you must:
     - Have a static external IP address available that the load balancer can use (e.g. on GKE you must explicitly provision this first)
     - Replace `clusterIP: None` in bono-svc.yaml with `type: "LoadBalancer"`, and add a line following this of `loadBalancerIP: <static IP>`
     - Add the lines `name: PUBLIC_IP` and `value: <static IP>` to the `env:` section of the bono-depl.yaml file
