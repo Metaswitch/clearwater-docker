@@ -1,7 +1,7 @@
 
 # Clearwater Docker
 
-This repository contains instructions and resources for deploying [Project Clearwater](http://www.projectclearwater.org) as [Docker](https://www.docker.com/) containers.  It describes three deployment options -- the first two are recommended.   
+This repository contains instructions and resources for deploying [Project Clearwater](http://www.projectclearwater.org) as [Docker](https://www.docker.com/) containers.  It describes three deployment options -- the first two are recommended.
 
 - Using [Docker Compose](https://docs.docker.com/compose/) for quick deployments on a single host.
 - Using [Kubernetes](https://kubernetes.io/) for orchestrated deployments on clusters of machines.
@@ -56,6 +56,9 @@ To prepare your system to deploy Clearwater using Compose, after running the com
     # Build the base Clearwater docker image.
     cd clearwater-docker
     sudo docker build -t clearwater/base base
+    sudo docker-compose -f minimal-distributed.yaml build
+
+Note that Compose will name each image like `${IMAGE_PREFIX}/<node_name>` and `IMAGE_PREFIX=clearwater` by default. If you need to specify your registry, please edit `IMAGE_PREFIX` in `clearwater-docker/.env` like `IMAGE_PREFIX=<your_registry>/clearwater`.
 
 #### Starting Clearwater
 
@@ -172,7 +175,7 @@ rake test[default.svc.cluster.local] PROXY={{Bono service DNS/IP}} ELLIS={{Ellis
 
 ### Scaling the deployment
 
-Most Clearwater services can be dynamically scaled up and down by running e.g. 
+Most Clearwater services can be dynamically scaled up and down by running e.g.
 `kubectl scale deployment sprout --replicas=3`
 Exceptions are:
 - You can only have a single Bono if Bono pods do not have externally routable IP addresses.
@@ -265,6 +268,7 @@ If you wish to destroy your deployment either to redeploy with a different confi
 
     # To rebuild an image (rather than pull it from the cache), add `--no-cache` or `--force-recreate` to the build commands
     sudo docker build --no-cache -t clearwater/base base
+    sudo docker-compose -f minimal-distributed.yaml build
     sudo docker-compose -f minimal-distributed.yaml up --force-recreate
 
     # Remove all docker containers (not just Clearwater ones!)

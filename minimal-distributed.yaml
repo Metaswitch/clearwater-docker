@@ -14,12 +14,14 @@ services:
       -initial-cluster-state new
   astaire:
     build: astaire
+    image: "${IMAGE_PREFIX}/astaire"
     environment:
       - ADDITIONAL_SHARED_CONFIG
     ports:
       - 22
   chronos:
     build: chronos
+    image: "${IMAGE_PREFIX}/chronos"
     environment:
       - ADDITIONAL_SHARED_CONFIG
     ports:
@@ -28,12 +30,14 @@ services:
     sysctls:
        net.ipv6.conf.lo.disable_ipv6: 0
     build: cassandra
+    image: "${IMAGE_PREFIX}/cassandra"
     environment:
       - ADDITIONAL_SHARED_CONFIG
     ports:
       - 22
   bono:
     build: bono
+    image: "${IMAGE_PREFIX}/bono"
     environment:
       - PUBLIC_IP
       - ADDITIONAL_SHARED_CONFIG
@@ -46,36 +50,42 @@ services:
       - "5062:5062"
   sprout:
     build: sprout
+    image: "${IMAGE_PREFIX}/sprout"
     environment:
       - ADDITIONAL_SHARED_CONFIG
     ports:
       - 22
   homestead:
     build: homestead
+    image: "${IMAGE_PREFIX}/homestead"
     environment:
       - ADDITIONAL_SHARED_CONFIG
     ports:
       - 22
   homestead-prov:
     build: homestead-prov
+    image: "${IMAGE_PREFIX}/homestead-prov"
     environment:
       - ADDITIONAL_SHARED_CONFIG
     ports:
       - 22
   homer:
     build: homer
+    image: "${IMAGE_PREFIX}/homer"
     environment:
       - ADDITIONAL_SHARED_CONFIG
     ports:
       - 22
   ralf:
     build: ralf
+    image: "${IMAGE_PREFIX}/ralf"
     environment:
       - ADDITIONAL_SHARED_CONFIG
     ports:
       - 22
   ellis:
     build: ellis
+    image: "${IMAGE_PREFIX}/ellis"
     environment:
       - ADDITIONAL_SHARED_CONFIG
     ports:
